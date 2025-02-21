@@ -1,11 +1,7 @@
 import { useState, useEffect } from "react";    
 import { useNavigate } from "react-router-dom";
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-    "https://gmmzbnaxwkihfdftybyh.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdtbXpibmF4d2tpaGZkZnR5YnloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk0NDU4NTcsImV4cCI6MjA1NTAyMTg1N30.HskekXUaYsdSPUTM7M3EFzZwcMyXTxROlTUagoxpE44"
-);
+import { supabase } from "../server/supabaseClient";
+import Logo from "../assets/gclient-logo.png"
 
 export default function AdminDashboard() {
     const [students, setStudents] = useState([]);
@@ -13,12 +9,34 @@ export default function AdminDashboard() {
     const [courses, setCourses] = useState([]);
     const [categories, setCategories] = useState([]);
     const [user, setUser] = useState(null);
+    const [userProfile, setUserProfile] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
         async function checkAuth() {
             const { data: { user } } = await supabase.auth.getUser();
-            if (!user) navigate("/");
+            
+            if (!user) {
+                navigate("/");
+                return;
+            }
+        
+            // Fetch user role from database
+            const { data: userData } = await supabase
+                .from("users")
+                .select("*")
+                .eq("id", user.id)
+                .single();
+        
+            if (userData?.role !== "admin") {
+                alert("Access Denied!");
+                await supabase.auth.signOut();
+                navigate("/");
+                return;
+            }
+
+            // console.log(user);
+            setUserProfile(userData);
             setUser(user);
         }
         checkAuth();
@@ -70,48 +88,58 @@ export default function AdminDashboard() {
 
     return (
         <div className="bg-white min-h-screen p-6">
-        <div className="flex justify-between">
-            <h1 className="text-3xl font-bold text-[#01589A]">Super Admin Dashboard</h1>
-            <button className="bg-[#01589A] text-white px-3 py-1 rounded" onClick={handleLogout}>Logout</button>
-        </div>
-        <div className="grid grid-cols-2 gap-6 mt-6">
-            <section>
-            <h2 className="text-2xl font-semibold">Students</h2>
-            {students.map((student) => (
-                <div key={student.id} className="p-3 border-b flex justify-between">
-                <span>{student.name}</span>
-                <button className="bg-[#01589A] text-white px-3 py-1 rounded" onClick={() => deleteStudent(student.id)}>Delete</button>
+            <div className="w-full h-[5%] flex flex-col justify-center items-center border-b border-[var(--primary-grey)]">
+                <div className="w-[80%] h-full flex justify-between items-center">
+                    <div className="w-[15%] h-[100%]">
+                        <img src={Logo} alt="logo" className="w-[100%] h-[100%] object-cover" />
+                    </div>
+                    <div className="w-[50%] h-[100%] flex flex-col justify-center items-center">
+                        <h1 className="text-2xl font-bold text-[#01589A]">Admin Dashboard</h1>
+                        <p className="mt-[-0.5rem]">Welcome: {userProfile?.first_name}</p>
+                    </div>
+                    <button className="bg-[var(--bg-white)] border border-[var(--primary-blue)] text-[var(--primary-blue)] px-[2rem] py-[1.5rem] rounded" onClick={handleLogout}>
+                        Logout
+                    </button>
                 </div>
-            ))}
-            </section>
-            <section>
-            <h2 className="text-2xl font-semibold">Instructors</h2>
-            {instructors.map((instructor) => (
-                <div key={instructor.id} className="p-3 border-b flex justify-between">
-                <span>{instructor.name}</span>
-                <button className="bg-[#01589A] text-white px-3 py-1 rounded" onClick={() => deleteInstructor(instructor.id)}>Delete</button>
-                </div>
-            ))}
-            </section>
-            <section>
-            <h2 className="text-2xl font-semibold">Courses</h2>
-            {courses.map((course) => (
-                <div key={course.id} className="p-3 border-b flex justify-between">
-                <span>{course.title}</span>
-                <button className="bg-[#01589A] text-white px-3 py-1 rounded" onClick={() => deleteCourse(course.id)}>Delete</button>
-                </div>
-            ))}
-            </section>
-            <section>
-            <h2 className="text-2xl font-semibold">Categories</h2>
-            {categories.map((category) => (
-                <div key={category.id} className="p-3 border-b flex justify-between">
-                <span>{category.name}</span>
-                <button className="bg-[#01589A] text-white px-3 py-1 rounded" onClick={() => deleteCategory(category.id)}>Delete</button>
-                </div>
-            ))}
-            </section>
-        </div>
+            </div>
+            <div className="w-[80%] m-auto mt-[4rem] grid grid-cols-2 gap-6">
+                <section>
+                <h2 className="text-2xl font-semibold">Students</h2>
+                {students.map((student) => (
+                    <div key={student.id} className="p-3 border-b flex justify-between">
+                    <span>{student.name}</span>
+                    <button className="bg-[#01589A] text-white px-3 py-1 rounded" onClick={() => deleteStudent(student.id)}>Delete</button>
+                    </div>
+                ))}
+                </section>
+                <section>
+                <h2 className="text-2xl font-semibold">Instructors</h2>
+                {instructors.map((instructor) => (
+                    <div key={instructor.id} className="p-3 border-b flex justify-between">
+                    <span>{instructor.name}</span>
+                    <button className="bg-[#01589A] text-white px-3 py-1 rounded" onClick={() => deleteInstructor(instructor.id)}>Delete</button>
+                    </div>
+                ))}
+                </section>
+                <section>
+                <h2 className="text-2xl font-semibold">Courses</h2>
+                {courses.map((course) => (
+                    <div key={course.id} className="p-3 border-b flex justify-between">
+                    <span>{course.title}</span>
+                    <button className="bg-[#01589A] text-white px-3 py-1 rounded" onClick={() => deleteCourse(course.id)}>Delete</button>
+                    </div>
+                ))}
+                </section>
+                <section>
+                <h2 className="text-2xl font-semibold">Categories</h2>
+                {categories.map((category) => (
+                    <div key={category.id} className="p-3 border-b flex justify-between">
+                    <span>{category.name}</span>
+                    <button className="bg-[#01589A] text-white px-3 py-1 rounded" onClick={() => deleteCategory(category.id)}>Delete</button>
+                    </div>
+                ))}
+                </section>
+            </div>
         </div>
     );
 }

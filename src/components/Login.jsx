@@ -5,12 +5,25 @@ import { MdChevronRight } from "react-icons/md";
 import { useState } from 'react';
 import EmailIcon from "../assets/icons/email.svg";
 import PasswordIcon from "../assets/icons/lock.svg";
+import { supabase } from "../server/supabaseClient"
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
     const { register, handleSubmit, formState: { errors } } = useForm()
 
-    const onSubmit = (data) => {
-        console.log(data)
+    const navigate = useNavigate();
+
+    const onSubmit = async (data) => {
+        const { email, password } = data;
+        const { error } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+
+        // route to dashboard if successful
+        if (!error) navigate('/dashboard');
+        if (error) console.error(error);
+        return data;
     }
 
     const [showPassword, setShowPassword] = useState(false)
