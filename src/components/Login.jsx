@@ -42,7 +42,7 @@ const Login = () => {
 
 
     return (
-        <div className="w-[30%] md:w-[60%] sm:w-[90%] h-[30%] flex flex-col gap-[1rem] items-center bg-[url(../assets/auth.svg)] bg-cover bg-center bg-no-repeat">
+        <div className="w-[30%] md:w-[60%] sm:w-[90%] h-[30%] flex flex-col gap-[1rem] items-center">
             <h1 className="text-[2rem] font-[700] leading-[3rem]">Super Admin</h1>
             <form onSubmit={handleSubmit(onSubmit)} className="w-full h-[100%] flex flex-col gap-[2.5rem]">
                 <div className="w-full h-[3rem] flex flex-col">

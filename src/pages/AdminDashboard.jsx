@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";    
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../server/supabaseClient";
-import Logo from "../assets/footer-logo.png"
+import Logo from "../assets/gclient-logo.png"
 import { HiOutlineUserCircle } from "react-icons/hi2";
 import { HiOutlineUserGroup } from "react-icons/hi";
 import { GiTeacher } from "react-icons/gi";
 import { GiBookshelf } from "react-icons/gi";
 import { MdOutlineNotifications } from "react-icons/md";
+import { IoPower } from "react-icons/io5";
 
 export default function AdminDashboard() {
     const [students, setStudents] = useState([]);
@@ -93,11 +94,18 @@ export default function AdminDashboard() {
 
     return (
         <div className="w-full flex justify-between items-center h-[100vh] min-h-screen p-6 bg-[var(--bg-white)]">
-            <div className="sidebar w-[15%] h-full flex flex-col items-center justify-start bg-[var(--primary-blue)]">
-                <div className="logo w-[100%] h-[10%] flex flex-col items-center justify-center">
-                    <img src={Logo} alt="Gclient Logo" className="w-[50%] h-[50%] object-contain" />
+            <div className="sidebar w-[15%] h-full flex flex-col items-center justify-between bg-[var(--primary-blue)] rounded-r-[0.3rem]">
+                <div className="sidebar-top w-[100%] h-[80%] flex flex-col items-center justify-between">
+                    <div className="logo w-[90%] h-[12%] flex flex-col items-center justify-center bg-[var(--bg-white)] mt-[0.5rem] rounded-[0.3rem]">
+                        <img src={Logo} alt="Gclient Logo" className="w-[50%] h-[50%] object-contain" />
+                    </div>
                 </div>
-                <div className="divider w-[100%] h-[1px] bg-[var(--primary-grey)]"></div>
+                <div className="sidebar-bottom w-[100%] h-[10%] flex flex-col items-start justify-start">
+                    <button onClick={handleLogout} className="w-[90%] h-[50%] rounded-[0.3rem] text-[var(--bg-white)] bg-[var(--primary-blue)] cursor-pointer flex items-center justify-start gap-[1rem]">
+                    <IoPower size={20} color="var(--bg-white)"/>
+                        Logout
+                    </button>
+                </div>
             </div>
             <div className="main w-[85%] h-full flex flex-col items-center justify-between">
                 <div className="header w-[100%] h-[10%] flex flex-col items-center justify-center border-b border-[var(--primary-grey)]">
