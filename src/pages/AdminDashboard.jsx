@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";    
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../server/supabaseClient";
-import Logo from "../assets/gclient-logo.png"
+import Logo from "../assets/footer-logo.png"
 import { HiOutlineUserCircle } from "react-icons/hi2";
+import { HiOutlineUserGroup } from "react-icons/hi";
 
 export default function AdminDashboard() {
     const [students, setStudents] = useState([]);
@@ -84,65 +85,62 @@ export default function AdminDashboard() {
 
     async function handleLogout() {
         await supabase.auth.signOut();
-        navigate("/login");
+        navigate("/");
     }
 
     return (
-        <div className="bg-white min-h-screen p-6">
-            <div className="w-full h-[5rem] flex flex-col justify-center items-center border-b border-[var(--primary-grey)]">
-                <div className="w-[80%] h-full flex justify-between items-center">
-                    <div className="w-[15%] h-[100%]">
-                        <img src={Logo} alt="logo" className="w-[100%] h-[100%] object-contain" />
-                    </div>
-                    <div className="w-[50%] h-[100%] flex flex-col justify-center items-center">
-                        <h1 className="text-[1.5rem] font-bold text-[#01589A]">Admin Dashboard</h1>
-                    </div>
-                    <div className="w-[15%] h-[100%] flex items-center justify-center gap-[0.5rem]">
-                        <HiOutlineUserCircle size={32} color="#01589A"/>
-                        <p>{userProfile?.first_name}</p>
-                    </div>
-                    <button className="bg-[var(--bg-white)] border border-[var(--primary-blue)] text-[var(--primary-blue)] hover:bg-[var(--primary-blue)] hover:text-[var(--bg-white)] px-[2rem] py-[1rem] rounded" onClick={handleLogout}>
-                        Logout
-                    </button>
+        <div className="w-full flex justify-between items-center h-[100vh] min-h-screen p-6 bg-[var(--bg-white)]">
+            <div className="sidebar w-[15%] h-full flex flex-col items-center justify-start bg-[var(--primary-blue)]">
+                <div className="logo w-[100%] h-[10%] flex flex-col items-center justify-center">
+                    <img src={Logo} alt="Gclient Logo" className="w-[50%] h-[50%] object-contain" />
                 </div>
+                <div className="divider w-[100%] h-[1px] bg-[var(--primary-grey)]"></div>
             </div>
-            <div className="w-[80%] m-auto mt-[4rem] grid grid-cols-2 gap-6">
-                <section>
-                <h2 className="text-2xl font-semibold">Students</h2>
-                {students.map((student) => (
-                    <div key={student.id} className="p-3 border-b flex justify-between">
-                    <span>{student.first_name} {student.last_name}</span>
-                    <button className="bg-[#01589A] text-white px-3 py-1 rounded" onClick={() => deleteStudent(student.id)}>Delete</button>
+            <div className="main w-[85%] h-full flex flex-col items-center justify-between">
+                <div className="header w-[100%] h-[10%] flex flex-col items-center justify-center border-b border-[var(--primary-grey)]">
+                    <div className="header-container w-[90%] h-[100%] flex items-center justify-between">
+                        <div className="date flex gap-[1rem] items-start">
+                            {/* todays date and current time */}
+                            <p>{new Date().toLocaleDateString()}</p>
+                            <p>{new Date().toLocaleTimeString()}</p>
+                        </div>
+                        <div className="search w-[50%] h-[50%] border border-[var(--primary-grey)] rounded-[1rem]"></div>
+                        <div className="user-profile w-[10%] h-[50%] flex items-center justify-end">
+                            {userProfile.profile_picture ? 
+                                <img src={userProfile.profile_picture} alt="User Profile" className="w-[100%] h-[100%] object-cover rounded-[50%]" />
+                                : <HiOutlineUserCircle size={35} color="var(--primary-blue)"/>
+                            }
+                        </div>
                     </div>
-                ))}
-                </section>
-                <section>
-                <h2 className="text-2xl font-semibold">Instructors</h2>
-                {instructors.map((instructor) => (
-                    <div key={instructor.id} className="p-3 border-b flex justify-between">
-                    <span>{instructor.first_name} {instructor.last_name}</span>
-                    <button className="bg-[#01589A] text-white px-3 py-1 rounded" onClick={() => deleteInstructor(instructor.id)}>Delete</button>
+                </div>
+                <div className="content w-[90%] h-[90%] flex flex-col items-center justify-between">
+                    <div className="top w-[100%] h-[10%]">
+                        <h3>Welcome back, {userProfile.first_name}!</h3>
                     </div>
-                ))}
-                </section>
-                <section>
-                <h2 className="text-2xl font-semibold">Courses</h2>
-                {courses.map((course) => (
-                    <div key={course.id} className="p-3 border-b flex justify-between">
-                    <span>{course.title}</span>
-                    <button className="bg-[#01589A] text-white px-3 py-1 rounded" onClick={() => deleteCourse(course.id)}>Delete</button>
+                    <div className="bottom w-[100%] h-[90%]">
+                        <div className="bottom-top w-[100%] h-[33%] flex items-center justify-between">
+                            <div className="card w-[30%] h-[100%] flex flex-col justify-between items-center shadow-(--shadow-md) border border-[var(--primary-grey)] bg-[var(--student-card-bg)] rounded-[1rem]">
+                                <div className="card-top flex items-center justify-between w-[100%] h-[60%] p-[1rem] box-border ">
+                                    <div className="left w-[30%] h-[100%] flex flex-col items-center justify-center bg-[var(--student-card-icon-bg)] rounded-[1rem]">
+                                        <HiOutlineUserGroup size={30} color="var(--bg-white)"/>
+                                    </div>
+                                    <div className="right w-[50%] h-[100%]">
+                                        <h3 className="text-[var(--bg-white)]">Total Students</h3>
+                                    </div>
+                                </div>
+                                <div className="card-bottom w-[100%] h-[30%]">
+
+                                </div>
+                            </div>
+                            <div className="card w-[30%] h-[100%] shadow-(--shadow-md) border border-[var(--primary-grey)] rounded-[1rem]">
+                                <div className="card-top w-[100%] h-[70%]"></div>
+                                <div className="card-bottom w-[100%] h-[30%]"></div>
+                            </div>
+                        </div>
+                        <div className="bottom-middle"></div>
+                        <div className="bottom-bottom"></div>
                     </div>
-                ))}
-                </section>
-                <section>
-                <h2 className="text-2xl font-semibold">Categories</h2>
-                {categories.map((category) => (
-                    <div key={category.id} className="p-3 border-b flex justify-between">
-                    <span>{category.name}</span>
-                    <button className="bg-[#01589A] text-white px-3 py-1 rounded" onClick={() => deleteCategory(category.id)}>Delete</button>
-                    </div>
-                ))}
-                </section>
+                </div>
             </div>
         </div>
     );
