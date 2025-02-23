@@ -38,6 +38,10 @@
   --inst-hero-text-p: #303762;
   --student-card-bg: #f1416c;
   --student-card-icon-bg: #f1537a;
+  --instructor-card-bg: #ffc700;
+  --instructor-card-icon-bg: #fff4cc;
+  --course-card-bg: #20d492;
+  --course-card-icon-bg: #fff;
 
   /* Font Families */
   --font-primary: 'Inter', sans-serif;

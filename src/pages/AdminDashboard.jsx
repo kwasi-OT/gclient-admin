@@ -4,6 +4,9 @@ import { supabase } from "../server/supabaseClient";
 import Logo from "../assets/footer-logo.png"
 import { HiOutlineUserCircle } from "react-icons/hi2";
 import { HiOutlineUserGroup } from "react-icons/hi";
+import { GiTeacher } from "react-icons/gi";
+import { GiBookshelf } from "react-icons/gi";
+import { MdOutlineNotifications } from "react-icons/md";
 
 export default function AdminDashboard() {
     const [students, setStudents] = useState([]);
@@ -105,7 +108,8 @@ export default function AdminDashboard() {
                             <p>{new Date().toLocaleTimeString()}</p>
                         </div>
                         <div className="search w-[50%] h-[50%] border border-[var(--primary-grey)] rounded-[1rem]"></div>
-                        <div className="user-profile w-[10%] h-[50%] flex items-center justify-end">
+                        <div className="user-profile w-[10%] h-[50%] flex items-center justify-end gap-[1rem]">
+                            <MdOutlineNotifications size={30} color="var(--primary-grey)"/>
                             {userProfile.profile_picture ? 
                                 <img src={userProfile.profile_picture} alt="User Profile" className="w-[100%] h-[100%] object-cover rounded-[50%]" />
                                 : <HiOutlineUserCircle size={35} color="var(--primary-blue)"/>
@@ -132,9 +136,31 @@ export default function AdminDashboard() {
 
                                 </div>
                             </div>
-                            <div className="card w-[30%] h-[100%] shadow-(--shadow-md) border border-[var(--primary-grey)] rounded-[1rem]">
-                                <div className="card-top w-[100%] h-[70%]"></div>
-                                <div className="card-bottom w-[100%] h-[30%]"></div>
+                            <div className="card w-[30%] h-[100%] flex flex-col justify-between items-center shadow-(--shadow-md) border border-[var(--primary-grey)] bg-[var(--instructor-card-bg)] rounded-[1rem]">
+                                <div className="card-top flex items-center justify-between w-[100%] h-[60%] p-[1rem] box-border ">
+                                    <div className="left w-[30%] h-[100%] flex flex-col items-center justify-center bg-[var(--instructor-card-icon-bg)] rounded-[1rem]">
+                                        <GiTeacher size={30} color="var(--instructor-card-bg)"/>
+                                    </div>
+                                    <div className="right w-[60%] h-[100%]">
+                                        <h3 className="text-[var(--bg-white)]">Total Instructors</h3>
+                                    </div>
+                                </div>
+                                <div className="card-bottom w-[100%] h-[30%]">
+
+                                </div>
+                            </div>
+                            <div className="card w-[30%] h-[100%] shadow-(--shadow-md) border border-[var(--primary-grey)] bg-[var(--course-card-bg)] rounded-[1rem]">
+                            <div className="card-top flex items-center justify-between w-[100%] h-[60%] p-[1rem] box-border ">
+                                    <div className="left w-[30%] h-[100%] flex flex-col items-center justify-center bg-[#d2f6e7] rounded-[1rem]">
+                                        <GiBookshelf size={30} color="var(--course-card-bg)"/>
+                                    </div>
+                                    <div className="right w-[60%] h-[100%]">
+                                        <h3 className="text-[var(--bg-white)]">Total Courses</h3>
+                                    </div>
+                                </div>
+                                <div className="card-bottom w-[100%] h-[30%]">
+
+                                </div>
                             </div>
                         </div>
                         <div className="bottom-middle"></div>
