@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../server/supabaseClient";
 import Logo from "../assets/gclient-logo.png"
+import { HiOutlineUserCircle } from "react-icons/hi2";
 
 export default function AdminDashboard() {
     const [students, setStudents] = useState([]);
@@ -50,8 +51,8 @@ export default function AdminDashboard() {
     if (!user) return null;
 
     async function fetchData() {
-        const { data: studentsData } = await supabase.from("students").select("*");
-        const { data: instructorsData } = await supabase.from("instructors").select("*");
+        const { data: studentsData } = await supabase.from("users").select("*").eq("role", "student");
+        const { data: instructorsData } = await supabase.from("users").select("*").eq("role", "instructor");
         const { data: coursesData } = await supabase.from("courses").select("*");
         const { data: categoriesData } = await supabase.from("categories").select("*");
 
@@ -88,16 +89,19 @@ export default function AdminDashboard() {
 
     return (
         <div className="bg-white min-h-screen p-6">
-            <div className="w-full h-[5%] flex flex-col justify-center items-center border-b border-[var(--primary-grey)]">
+            <div className="w-full h-[5rem] flex flex-col justify-center items-center border-b border-[var(--primary-grey)]">
                 <div className="w-[80%] h-full flex justify-between items-center">
                     <div className="w-[15%] h-[100%]">
-                        <img src={Logo} alt="logo" className="w-[100%] h-[100%] object-cover" />
+                        <img src={Logo} alt="logo" className="w-[100%] h-[100%] object-contain" />
                     </div>
                     <div className="w-[50%] h-[100%] flex flex-col justify-center items-center">
-                        <h1 className="text-2xl font-bold text-[#01589A]">Admin Dashboard</h1>
-                        <p className="mt-[-0.5rem]">Welcome: {userProfile?.first_name}</p>
+                        <h1 className="text-[1.5rem] font-bold text-[#01589A]">Admin Dashboard</h1>
                     </div>
-                    <button className="bg-[var(--bg-white)] border border-[var(--primary-blue)] text-[var(--primary-blue)] px-[2rem] py-[1.5rem] rounded" onClick={handleLogout}>
+                    <div className="w-[15%] h-[100%] flex items-center justify-center gap-[0.5rem]">
+                        <HiOutlineUserCircle size={32} color="#01589A"/>
+                        <p>{userProfile?.first_name}</p>
+                    </div>
+                    <button className="bg-[var(--bg-white)] border border-[var(--primary-blue)] text-[var(--primary-blue)] hover:bg-[var(--primary-blue)] hover:text-[var(--bg-white)] px-[2rem] py-[1rem] rounded" onClick={handleLogout}>
                         Logout
                     </button>
                 </div>
@@ -107,7 +111,7 @@ export default function AdminDashboard() {
                 <h2 className="text-2xl font-semibold">Students</h2>
                 {students.map((student) => (
                     <div key={student.id} className="p-3 border-b flex justify-between">
-                    <span>{student.name}</span>
+                    <span>{student.first_name} {student.last_name}</span>
                     <button className="bg-[#01589A] text-white px-3 py-1 rounded" onClick={() => deleteStudent(student.id)}>Delete</button>
                     </div>
                 ))}
@@ -116,7 +120,7 @@ export default function AdminDashboard() {
                 <h2 className="text-2xl font-semibold">Instructors</h2>
                 {instructors.map((instructor) => (
                     <div key={instructor.id} className="p-3 border-b flex justify-between">
-                    <span>{instructor.name}</span>
+                    <span>{instructor.first_name} {instructor.last_name}</span>
                     <button className="bg-[#01589A] text-white px-3 py-1 rounded" onClick={() => deleteInstructor(instructor.id)}>Delete</button>
                     </div>
                 ))}

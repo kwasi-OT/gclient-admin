@@ -7,13 +7,20 @@ import EmailIcon from "../assets/icons/email.svg";
 import PasswordIcon from "../assets/icons/lock.svg";
 import { supabase } from "../server/supabaseClient"
 import { useNavigate } from 'react-router-dom';
+import toast from "react-hot-toast";
 
 const Login = () => {
-    const { register, handleSubmit, formState: { errors } } = useForm()
-
+    const { register, handleSubmit, formState: { errors } } = useForm();
+    const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
+
     const onSubmit = async (data) => {
+        setLoading(true);
         const { email, password } = data;
         const { error } = await supabase.auth.signInWithPassword({
             email,
@@ -21,18 +28,21 @@ const Login = () => {
         });
 
         // route to dashboard if successful
-        if (!error) navigate('/dashboard');
-        if (error) console.error(error);
+        if (!error) {
+            toast.success('Login successful');
+            navigate('/dashboard');
+        }
+        if (error) {
+            toast.error('Login failed');
+            console.error(error);
+        }
+        setLoading(false);
         return data;
     }
 
-    const [showPassword, setShowPassword] = useState(false)
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
-    };
 
     return (
-        <div className="w-[30%] md:w-[60%] sm:w-[90%] h-[30%] flex flex-col gap-[1rem] items-center">
+        <div className="w-[30%] md:w-[60%] sm:w-[90%] h-[30%] flex flex-col gap-[1rem] items-center bg-[url(../assets/auth.svg)] bg-cover bg-center bg-no-repeat">
             <h1 className="text-[2rem] font-[700] leading-[3rem]">Super Admin</h1>
             <form onSubmit={handleSubmit(onSubmit)} className="w-full h-[100%] flex flex-col gap-[2.5rem]">
                 <div className="w-full h-[3rem] flex flex-col">
@@ -60,9 +70,15 @@ const Login = () => {
                     </div>
                     {errors.password && <p className='error-message text-[0.7rem] text-[var(--primary-red)]'>{errors.password.message}</p>}
                 </div>
-                <button type="submit" className="w-full h-[3rem] rounded-[0.3rem] bg-[var(--primary-blue)] hover:bg-[var(--logo-blue)] text-[var(--bg-white)] flex items-center justify-center gap-[0.5rem]" >
-                    Login
-                    <MdChevronRight color="var(--bg-white)" size={25}/>    
+                <button type="submit" className="w-full h-[3rem] rounded-[0.3rem] bg-[var(--primary-blue)] hover:bg-[var(--logo-blue)] text-[var(--bg-white)] flex items-center justify-center gap-[0.5rem]" disabled={loading}>
+                    {loading ? 
+                        'loading...' : 
+                        'Login'
+                    }
+                    {loading ? 
+                        null :
+                        <MdChevronRight color="var(--bg-white)" size={25}/>  
+                    }  
                 </button>
             </form>
         </div>
