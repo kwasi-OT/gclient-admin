@@ -8,6 +8,7 @@ import { GiTeacher } from "react-icons/gi";
 import { GiBookshelf } from "react-icons/gi";
 import { MdOutlineNotifications } from "react-icons/md";
 import { IoPower } from "react-icons/io5";
+import { toast } from "react-hot-toast";
 
 export default function AdminDashboard() {
     const [students, setStudents] = useState([]);
@@ -89,6 +90,7 @@ export default function AdminDashboard() {
 
     async function handleLogout() {
         await supabase.auth.signOut();
+        toast.success("Logout successful");
         navigate("/");
     }
 
@@ -120,7 +122,9 @@ export default function AdminDashboard() {
                             <MdOutlineNotifications size={30} color="var(--primary-grey)"/>
                             {userProfile.profile_picture ? 
                                 <img src={userProfile.profile_picture} alt="User Profile" className="w-[100%] h-[100%] object-cover rounded-[50%]" />
-                                : <HiOutlineUserCircle size={35} color="var(--primary-blue)"/>
+                                : <div className='rounded-full bg-[var(--primary-blue)] text-[var(--bg-white)] w-[2.5rem] h-[2.5rem] flex items-center justify-center text-[1rem] font-[600]'>
+                                {userProfile.first_name[0]}{userProfile.last_name[0]}
+                                </div>
                             }
                         </div>
                     </div>
