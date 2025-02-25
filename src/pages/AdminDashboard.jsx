@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../server/supabaseClient";
 import Logo from "../assets/gclient-logo.png"
 import { HiOutlineUserGroup } from "react-icons/hi";
-import { GiTeacher } from "react-icons/gi";
 import { GiBookshelf } from "react-icons/gi";
 import { MdOutlineNotifications } from "react-icons/md";
 import { RiDashboardHorizontalLine } from "react-icons/ri";
@@ -21,10 +20,6 @@ import Instructors from "../components/Instructors";
 import Courses from "../components/Courses";
 
 export default function AdminDashboard() {
-    const [students, setStudents] = useState([]);
-    const [instructors, setInstructors] = useState([]);
-    const [courses, setCourses] = useState([]);
-    const [categories, setCategories] = useState([]);
     const [user, setUser] = useState(null);
     const [userProfile, setUserProfile] = useState(null);
     const [activeTab, setActiveTab] = useState("dashboard");
@@ -65,44 +60,7 @@ export default function AdminDashboard() {
         checkAuth();
     }, [navigate]);
 
-    
-    useEffect(() => {
-        fetchData();
-    }, []);
-
     if (!user) return null;
-
-    async function fetchData() {
-        const { data: studentsData } = await supabase.from("users").select("*").eq("role", "student");
-        const { data: instructorsData } = await supabase.from("users").select("*").eq("role", "instructor");
-        const { data: coursesData } = await supabase.from("courses").select("*");
-        const { data: categoriesData } = await supabase.from("categories").select("*");
-
-        setStudents(studentsData || []);
-        setInstructors(instructorsData || []);
-        setCourses(coursesData || []);
-        setCategories(categoriesData || []);
-    }
-
-    async function deleteStudent(id) {
-        await supabase.from("students").delete().eq("id", id);
-        fetchData();
-    }
-
-    async function deleteInstructor(id) {
-        await supabase.from("instructors").delete().eq("id", id);
-        fetchData();
-    }
-
-    async function deleteCourse(id) {
-        await supabase.from("courses").delete().eq("id", id);
-        fetchData();
-    }
-
-    async function deleteCategory(id) {
-        await supabase.from("categories").delete().eq("id", id);
-        fetchData();
-    }
 
     async function handleLogout() {
         await supabase.auth.signOut();
