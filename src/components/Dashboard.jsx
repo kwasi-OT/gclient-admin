@@ -10,7 +10,6 @@ const Dashboard = () => {
     const [studentsCount, setStudentsCount] = useState(0);
     const [instructorsCount, setInstructorsCount] = useState(0);
     const [coursesCount, setCoursesCount] = useState(0);
-    // const [categoriesCount, setCategoriesCount] = useState(0);
 
     useEffect(() => {
         fetchData();
@@ -23,8 +22,6 @@ const Dashboard = () => {
         const { count: instructorsCount } = await supabase.from("users").select("*", { count: "exact", head: true }).eq("role", "instructor");
         // find the total number of courses
         const { count: coursesCount } = await supabase.from("courses").select("*", { count: "exact", head: true });
-        // find the total number of categories
-        // const { count: categoriesCount } = await supabase.from("categories").select("*", { count: "exact", head: true });
 
         setStudentsCount(studentsCount);
         setInstructorsCount(instructorsCount);
