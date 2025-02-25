@@ -12,6 +12,13 @@ import { MdOutlineCategory } from "react-icons/md";
 import { LuSettings } from "react-icons/lu";
 import { IoPower } from "react-icons/io5";
 import { toast } from "react-hot-toast";
+import ClockAPI from "../components/Time";
+import Categories from "../components/Categories";
+import Settings from "../components/Settings";
+import Dashboard from "../components/Dashboard";
+import Students from "../components/Students";
+import Instructors from "../components/Instructors";
+import Courses from "../components/Courses";
 
 export default function AdminDashboard() {
     const [students, setStudents] = useState([]);
@@ -147,10 +154,10 @@ export default function AdminDashboard() {
             <div className="main w-[85%] h-full flex flex-col items-center justify-between">
                 <div className="header w-[100%] h-[10%] flex flex-col items-center justify-center border-b border-[var(--primary-grey)]">
                     <div className="header-container w-[90%] h-[100%] flex items-center justify-between">
-                        <div className="date flex gap-[1rem] items-start">
+                        <div className="date flex gap-[1rem] items-center">
                             {/* todays date and current time */}
                             <p>{new Date().toLocaleDateString()}</p>
-                            <p>{new Date().toLocaleTimeString()}</p>
+                            <ClockAPI />
                         </div>
                         <div className="search w-[50%] h-[50%] border border-[var(--primary-grey)] rounded-[1rem]"></div>
                         <div className="user-profile w-[15%] h-[50%] flex items-center justify-end gap-[1rem]">
@@ -167,52 +174,22 @@ export default function AdminDashboard() {
                 </div>
                 <div className="content w-[90%] h-[90%] flex flex-col items-center justify-between">
                     <div className="top w-[100%] h-[10%]">
-                        <h3>Welcome back, {userProfile.first_name}!</h3>
+                        <h4 className="twm-s-title">
+                            {activeTab === 'dashboard' && 'Welcome back, ' + userProfile.first_name + '!'}
+                            {activeTab === 'categories' && 'Categories'}
+                            {activeTab === 'settings' && 'Settings'}
+                            {activeTab === 'students' && 'Students'}
+                            {activeTab === 'courses' && 'Courses'}
+                            {activeTab === 'instructors' && 'Instructors'}
+                        </h4>
                     </div>
                     <div className="bottom w-[100%] h-[90%]">
-                        <div className="bottom-top w-[100%] h-[33%] flex items-center justify-between">
-                            <div className="card w-[30%] h-[100%] flex flex-col justify-between items-center shadow-(--shadow-md) border border-[var(--primary-grey)] bg-[var(--student-card-bg)] rounded-[1rem]">
-                                <div className="card-top flex items-center justify-between w-[100%] h-[60%] p-[1rem] box-border ">
-                                    <div className="left w-[30%] h-[100%] flex flex-col items-center justify-center bg-[var(--student-card-icon-bg)] rounded-[1rem]">
-                                        <HiOutlineUserGroup size={30} color="var(--bg-white)"/>
-                                    </div>
-                                    <div className="right w-[50%] h-[100%]">
-                                        <h3 className="text-[var(--bg-white)]">Total Students</h3>
-                                    </div>
-                                </div>
-                                <div className="card-bottom w-[100%] h-[30%]">
-
-                                </div>
-                            </div>
-                            <div className="card w-[30%] h-[100%] flex flex-col justify-between items-center shadow-(--shadow-md) border border-[var(--primary-grey)] bg-[var(--instructor-card-bg)] rounded-[1rem]">
-                                <div className="card-top flex items-center justify-between w-[100%] h-[60%] p-[1rem] box-border ">
-                                    <div className="left w-[30%] h-[100%] flex flex-col items-center justify-center bg-[var(--instructor-card-icon-bg)] rounded-[1rem]">
-                                        <GiTeacher size={30} color="var(--instructor-card-bg)"/>
-                                    </div>
-                                    <div className="right w-[60%] h-[100%]">
-                                        <h3 className="text-[var(--bg-white)]">Total Instructors</h3>
-                                    </div>
-                                </div>
-                                <div className="card-bottom w-[100%] h-[30%]">
-
-                                </div>
-                            </div>
-                            <div className="card w-[30%] h-[100%] shadow-(--shadow-md) border border-[var(--primary-grey)] bg-[var(--course-card-bg)] rounded-[1rem]">
-                            <div className="card-top flex items-center justify-between w-[100%] h-[60%] p-[1rem] box-border ">
-                                    <div className="left w-[30%] h-[100%] flex flex-col items-center justify-center bg-[#d2f6e7] rounded-[1rem]">
-                                        <GiBookshelf size={30} color="var(--course-card-bg)"/>
-                                    </div>
-                                    <div className="right w-[60%] h-[100%]">
-                                        <h3 className="text-[var(--bg-white)]">Total Courses</h3>
-                                    </div>
-                                </div>
-                                <div className="card-bottom w-[100%] h-[30%]">
-
-                                </div>
-                            </div>
-                        </div>
-                        <div className="bottom-middle"></div>
-                        <div className="bottom-bottom"></div>
+                        {activeTab === 'dashboard' && <Dashboard />}
+                        {activeTab === 'instructors' && <Instructors />}
+                        {activeTab === 'students' && <Students />}
+                        {activeTab === 'courses' && <Courses />}
+                        {activeTab === 'categories' && <Categories />}
+                        {activeTab === 'settings' && <Settings />}
                     </div>
                 </div>
             </div>
