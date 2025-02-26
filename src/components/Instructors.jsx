@@ -4,6 +4,7 @@ import { MdOutlinePersonAddAlt } from "react-icons/md";
 import InstructorModal from "./InstructorModal";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import AlertModal from "./AlertModal";
 
 
 const Instructors = () => {
@@ -14,6 +15,7 @@ const Instructors = () => {
     const [totalInstructors, setTotalInstructors] = useState(0);
     const [selectedInstructor, setSelectedInstructor] = useState(null);
     const [isModalOpen, setModalOpen] = useState(false);
+    const [isAlertModalOpen, setAlertModalOpen] = useState(false);
 
 
     // get all instructors
@@ -49,12 +51,14 @@ const Instructors = () => {
     };
 
     const handleDelete = async (id) => {
-        const { error } = await supabase.from("users").delete().eq("id", id);
-        if (error) {
-            console.error("Error deleting instructor:", error);
-        } else {
-            fetchInstructors(); // Refresh the list after deletion
-        }
+        setSelectedInstructor(instructor.find((instructor) => instructor.id === id));
+        setAlertModalOpen(true);
+        // const { error } = await supabase.from("users").delete().eq("id", id);
+        // if (error) {
+        //     console.error("Error deleting instructor:", error);
+        // } else {
+        //     fetchInstructors(); // Refresh the list after deletion
+        // }
     };
 
     const handleAddInstructor = () => {
@@ -127,6 +131,14 @@ const Instructors = () => {
                 onClose={() => setModalOpen(false)} 
                 instructor={selectedInstructor} 
                 onSave={fetchInstructors} 
+            />
+
+            {/* Alert Modal */}
+            <AlertModal 
+                isOpen={isAlertModalOpen} 
+                onClose={() => setAlertModalOpen(false)} 
+                onConfirm={fetchInstructors} 
+                instructor={selectedInstructor} 
             />
         </div>
     )

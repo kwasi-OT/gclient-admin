@@ -50,8 +50,8 @@ const InstructorModal = ({ isOpen, onClose, instructor, onSave }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="w-[20%] h-[60%] fixed right-[10%] top-[25%] flex items-center justify-center bg-[var(--primary-grey)] opacity-95">
-            <div className="flex flex-col items-center justify-center bg-[var(--bg-white)] p-[1rem] rounded">
+        <div className="w-[25%] h-fit min-h-[70%] fixed right-[10%] top-[25%] flex items-center justify-center bg-[var(--primary-grey)] opacity-95 shadow-[var(--shadow-md)]">
+            <div className="w-[80%] h-[80%] flex flex-col items-center justify-center bg-[var(--bg-white)] p-[1rem] rounded-[0.3rem]">
                 <h2 className="text-xl font-bold mb-4">{instructor ? 'Edit Instructor' : 'Add Instructor'}</h2>
                 <form onSubmit={handleSubmit} className='flex flex-col justify-center gap-[1rem]'>
                     <div className="mb-4">
