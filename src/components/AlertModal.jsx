@@ -20,10 +20,13 @@ const AlertModal = ({ isOpen, onClose, onConfirm, instructor }) => {
     return (
         <div className="fixed inset-[0] flex flex-col items-center justify-center bg-[var(--primary-black)] opacity-80">
             <div className="w-[30%] h-[20%] flex flex-col items-center justify-center gap-[1rem] bg-[var(--bg-white)] rounded-[0.3rem] shadow-[var(--shadow-md)] p-[1rem]">
-                <p className="text-gray-600 mb-4">Are you sure you want to delete this instructor?</p>
-                <div className="w-[100%] h-[100%] flex flex-row items-center justify-center gap-[1rem]">
-                    <button onClick={onClose} className="px-4 py-2 bg-gray-300 rounded-md mr-2">Cancel</button>
-                    <button onClick={() => handleDelete(instructor.id)} className="px-4 py-2 bg-red-500 text-white rounded-md">Delete</button>
+                <p className="text-gray-600 mb-4 flex flex-col items-center justify-center">
+                    Are you sure you want to delete this instructor?
+                    <span className="font-[600]">{instructor.first_name} {instructor.last_name}</span>
+                </p>
+                <div className="w-[100%] h-[90%] flex flex-row items-center justify-center mt-[-1.5rem] gap-[1rem]">
+                    <button onClick={onClose} className="px-4 py-2 bg-[var(--primary-blue)] hover:bg-[var(--logo-blue)] rounded-md mr-2">Cancel</button>
+                    <button onClick={() => handleDelete(instructor.id)} className="px-4 py-2 bg-[var(--primary-red)] hover:bg-[var(--student-card-bg)] text-white rounded-md">Delete</button>
                 </div>
             </div>
         </div>
