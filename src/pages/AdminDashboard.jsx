@@ -132,14 +132,14 @@ export default function AdminDashboard() {
                 </div>
                 <div className="content w-[90%] h-[90%] flex flex-col items-center justify-between">
                     <div className="top w-[100%] h-[10%]">
-                        <h4 className="twm-s-title">
+                        <h2 className="twm-s-title">
                             {activeTab === 'dashboard' && 'Welcome back, ' + userProfile.first_name + '!'}
                             {activeTab === 'categories' && 'Categories'}
                             {activeTab === 'settings' && 'Settings'}
                             {activeTab === 'students' && 'Students'}
                             {activeTab === 'courses' && 'Courses'}
                             {activeTab === 'instructors' && 'Instructors'}
-                        </h4>
+                        </h2>
                     </div>
                     <div className="bottom w-[100%] h-[90%]">
                         {activeTab === 'dashboard' && <Dashboard />}
