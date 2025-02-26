@@ -5,6 +5,10 @@ import InstructorModal from "./InstructorModal";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import AlertModal from "./AlertModal";
+import AvatarPlaceholder from "../assets/avatar.jpg"
+import { MdOutlineEdit } from "react-icons/md";
+import { ImBin } from "react-icons/im";
+import { IoEyeOutline } from "react-icons/io5";
 
 
 const Instructors = () => {
@@ -53,12 +57,6 @@ const Instructors = () => {
     const handleDelete = async (id) => {
         setSelectedInstructor(instructor.find((instructor) => instructor.id === id));
         setAlertModalOpen(true);
-        // const { error } = await supabase.from("users").delete().eq("id", id);
-        // if (error) {
-        //     console.error("Error deleting instructor:", error);
-        // } else {
-        //     fetchInstructors(); // Refresh the list after deletion
-        // }
     };
 
     const handleAddInstructor = () => {
@@ -85,29 +83,38 @@ const Instructors = () => {
                     <MdOutlinePersonAddAlt size={20}/>
                 </button>
             </div>
-            <table className="min-w-full bg-white border border-gray-300">
+            <table className="w-full bg-[var(--input-bg)]">
                 <thead>
                     <tr>
-                        <th className="border-b-2 border-gray-300 px-4 py-2">Profile Picture</th>
-                        <th className="border-b-2 border-gray-300 px-4 py-2">First Name</th>
-                        <th className="border-b-2 border-gray-300 px-4 py-2">Last Name</th>
-                        <th className="border-b-2 border-gray-300 px-4 py-2">Date Joined</th>
-                        <th className="border-b-2 border-gray-300 px-4 py-2">Actions</th>
+                        <th className=" px-[1rem] py-[1rem]">Profile Picture</th>
+                        <th className=" px-[1rem] py-[1rem]">First Name</th>
+                        <th className=" px-[1rem] py-[1rem]">Last Name</th>
+                        <th className=" px-[1rem] py-[1rem]">Date Joined</th>
+                        <th className=" px-[1rem] py-[1rem]">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {instructor.map((instructor) => (
                         <tr key={instructor.id}>
-                            <td className="border-b border-gray-300 px-4 py-2">
-                                <img src={instructor.profile_picture} alt={`${instructor.first_name} ${instructor.last_name}`} className="w-10 h-10 rounded-full" />
+                            <td className="bg-[var(--bg-white)] px-[1rem] py-[0.8rem] text-center">
+                                {
+                                    instructor.profile_picture ? (
+                                        <img src={instructor.profile_picture} alt={`${instructor.first_name} ${instructor.last_name}`} className="w-[3rem] h-[3rem] rounded-full" />
+                                    ) : (
+                                        <img src={AvatarPlaceholder} alt={`${instructor.first_name} ${instructor.last_name}`} className="w-[3rem] h-[3rem] rounded-full" />
+                                    )
+                                }
                             </td>
-                            <td className="border-b border-gray-300 px-4 py-2">{instructor.first_name}</td>
-                            <td className="border-b border-gray-300 px-4 py-2">{instructor.last_name}</td>
-                            <td className="border-b border-gray-300 px-4 py-2">{new Date(instructor.created_at).toLocaleDateString()}</td>
-                            <td className="border-b border-gray-300 px-4 py-2">
-                                <button onClick={() => handleView(instructor.id)} className="text-blue-500 hover:underline">View</button>
-                                <button onClick={() => handleEdit(instructor.id)} className="text-yellow-500 hover:underline mx-2">Edit</button>
-                                <button onClick={() => handleDelete(instructor.id)} className="text-red-500 hover:underline">Delete</button>
+                            <td className="bg-[var(--bg-white)] px-[1rem] py-[0.8rem] ">{instructor.first_name}</td>
+                            <td className="bg-[var(--bg-white)] px-[1rem] py-[0.8rem] ">{instructor.last_name}</td>
+                            <td className="bg-[var(--bg-white)] px-[1rem] py-[0.8rem] ">{new Date(instructor.created_at).toLocaleDateString()}</td>
+                            <td className="bg-[var(--bg-white)] px-[1rem] py-[0.8rem] text-center ">
+                                <button onClick={() => handleView(instructor.id)} className="rounded-[0.3rem] py-[0.8rem] px-[0.8rem] mr-[0.5rem] bg-[var(--light-blue)]">
+                                    <IoEyeOutline size={25} color="var(--primary-blue)"/></button>
+                                <button onClick={() => handleEdit(instructor.id)} className="rounded-[0.3rem] py-[0.8rem] px-[0.8rem] mr-[0.5rem] bg-[var(--input-active-bg)]">
+                                    <MdOutlineEdit size={25} color="var(--primary-lemon-green)"/></button>
+                                <button onClick={() => handleDelete(instructor.id)} className="rounded-[0.3rem] py-[0.8rem] px-[0.8rem] bg-[var(--input-error-bg)]">
+                                    <ImBin size={25} color="var(--primary-red)"/></button>
                             </td>
                         </tr>
                     ))}
@@ -119,7 +126,7 @@ const Instructors = () => {
                     <button 
                         key={index + 1}
                         onClick={() => paginate(index + 1)}
-                        className={`mx-1 px-3 py-1 rounded ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                        className={`mx-1 px-3 py-1 rounded ${currentPage === index + 1 ? 'bg-[var(--primary-blue)] text-white' : 'bg-[var(--primary-blue)]'}`}
                     >
                         {index + 1}
                     </button>
