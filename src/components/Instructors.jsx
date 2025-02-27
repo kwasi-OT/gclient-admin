@@ -9,6 +9,7 @@ import AvatarPlaceholder from "../assets/avatar.jpg"
 import { MdOutlineEdit } from "react-icons/md";
 import { ImBin } from "react-icons/im";
 import { IoEyeOutline } from "react-icons/io5";
+import InstructorDetailModal from "./InstructorDetailModal";
 
 
 const Instructors = () => {
@@ -20,6 +21,8 @@ const Instructors = () => {
     const [selectedInstructor, setSelectedInstructor] = useState(null);
     const [isModalOpen, setModalOpen] = useState(false);
     const [isAlertModalOpen, setAlertModalOpen] = useState(false);
+    const [selectedInstructorId, setSelectedInstructorId] = useState(null);
+    const [isDetailModalOpen, setDetailModalOpen] = useState(false);
 
 
     // get all instructors
@@ -45,8 +48,8 @@ const Instructors = () => {
     }, [currentPage, fetchInstructors]);
 
     const handleView = (id) => {
-        // Logic to view instructor details
-        console.log("View instructor:", id);
+        setSelectedInstructorId(id);
+        setDetailModalOpen(true);
     };
 
     const handleEdit = (id) => {
@@ -65,13 +68,6 @@ const Instructors = () => {
     };
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-    // if (loading) return (
-    //     <div className="w-full text-center flex flex-col justify-center items-center">
-    //         <Skeleton count={10}/>
-    //     </div>
-    // );
-
     
     return (
         <div className="w-full flex flex-col gap-[1rem]">
@@ -152,6 +148,13 @@ const Instructors = () => {
                 onClose={() => setAlertModalOpen(false)} 
                 onConfirm={fetchInstructors} 
                 instructor={selectedInstructor} 
+            />
+
+            {/* Instructor Detail Modal */}
+            <InstructorDetailModal 
+                isOpen={isDetailModalOpen}
+                onClose={() => setDetailModalOpen(false)}
+                instructorId={selectedInstructorId}
             />
         </div>
     )
