@@ -88,7 +88,7 @@ const InstructorDetailModal = ({ isOpen, onClose, instructorId }) => {
                             <img 
                                 src={instructor.profile_picture || AvatarPlaceholder} 
                                 alt={`${instructor.first_name} ${instructor.last_name}`} 
-                                className="w-[15%] h-[15%] rounded-full object-cover mb-4"
+                                className="w-[8rem] h-[8rem] rounded-full object-cover mb-4"
                             />
                         }
                         {
