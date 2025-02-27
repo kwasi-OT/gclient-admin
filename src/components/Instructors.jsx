@@ -10,13 +10,15 @@ import { MdOutlineEdit } from "react-icons/md";
 import { ImBin } from "react-icons/im";
 import { IoEyeOutline } from "react-icons/io5";
 import InstructorDetailModal from "./InstructorDetailModal";
+import { MdOutlineChevronLeft, MdOutlineChevronRight } from "react-icons/md";
+
 
 
 const Instructors = () => {
     const[instructor, setInstructor] = useState([]);
     const[loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const [instructorsPerPage] = useState(5);
+    const [instructorsPerPage] = useState(6);
     const [totalInstructors, setTotalInstructors] = useState(0);
     const [selectedInstructor, setSelectedInstructor] = useState(null);
     const [isModalOpen, setModalOpen] = useState(false);
@@ -28,17 +30,32 @@ const Instructors = () => {
     // get all instructors
     const fetchInstructors = useCallback(async () => {
         setLoading(true);
-        const { data, error, count } = await supabase
+        // First, get the total count of instructors
+        const { count: totalCount, error: countError } = await supabase
+            .from("users")
+            .select('*', { count: 'exact' })
+            .eq("role", "instructor");
+
+        if (countError) {
+            console.error("Error fetching instructor count:", countError);
+            setLoading(false);
+            return;
+        }
+
+        // Then fetch paginated instructors
+        const { data, error } = await supabase
             .from("users")
             .select("*")
             .eq("role", "instructor")
-            .range((currentPage - 1) * instructorsPerPage, currentPage * instructorsPerPage - 1)
+            .range((currentPage - 1) * instructorsPerPage, (currentPage * instructorsPerPage) - 1)
+            .order('created_at', { ascending: false });
+
             
         if (error) {
             console.error("Error fetching instructors", error);
         } else {
-            setInstructor(data);
-            setTotalInstructors(count);
+            setInstructor(data || []);
+            setTotalInstructors(totalCount || 0);
         }
         setLoading(false);
     }, [currentPage, instructorsPerPage]);
@@ -67,7 +84,10 @@ const Instructors = () => {
         setModalOpen(true);
     };
 
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    // const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalInstructors / instructorsPerPage);
     
     return (
         <div className="w-full flex flex-col gap-[1rem]">
@@ -123,17 +143,39 @@ const Instructors = () => {
                 </table>
             )}
             {/* Pagination */}
-            <div className="flex justify-center mt-4">
-                {Array.from({ length: Math.ceil(totalInstructors / instructorsPerPage) }, (_, index) => (
+            {totalPages > 1 && (
+                <div className="flex justify-center gap-[0.5rem] mt-[2rem] space-x-2">
                     <button 
-                        key={index + 1}
-                        onClick={() => paginate(index + 1)}
-                        className={`mx-1 px-3 py-1 rounded ${currentPage === index + 1 ? 'bg-[var(--primary-blue)] text-white' : 'bg-[var(--primary-blue)]'}`}
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                        className="px-4 py-2 bg-[var(--light-blue)] rounded-[0.3rem] disabled:opacity-50"
                     >
-                        {index + 1}
+                        <MdOutlineChevronLeft size={25} color="var(--primary-blue)"/>
                     </button>
-                ))}
-            </div>
+
+                    {[...Array(totalPages)].map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => setCurrentPage(index + 1)}
+                            className={`px-4 py-2 rounded ${
+                                currentPage === index + 1 
+                                    ? 'bg-[var(--placeholder-grey)] text-[var(--text-grey)]' 
+                                    : 'bg-[var(--bg-white)] text-[var(--primary-black)]'
+                            }`}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
+
+                    <button 
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                        className="px-4 py-2 bg-[var(--light-blue)] rounded-[0.3rem] disabled:opacity-50"
+                    >
+                        <MdOutlineChevronRight size={25} color="var(--primary-blue)"/>
+                    </button>
+                </div>
+            )}
             {/* Instructor Modal */}
             <InstructorModal 
                 isOpen={isModalOpen} 
