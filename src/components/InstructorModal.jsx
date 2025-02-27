@@ -1,50 +1,145 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../server/supabaseClient';
 import toast from 'react-hot-toast';
+import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
 
 const InstructorModal = ({ isOpen, onClose, instructor, onSave }) => {
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [email, setEmail] = useState('');
-    const [profilePicture, setProfilePicture] = useState('');
+    const [formData, setFormData] = useState({
+        first_name: '',
+        last_name: '',
+        email: '',
+        profile_picture: null
+    });
+    const [imageFile, setImageFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
 
+    // Reset form when modal opens or closes
     useEffect(() => {
-        if (instructor) {
-            setFirstName(instructor.first_name);
-            setLastName(instructor.last_name);
-            setEmail(instructor.email);
-            setProfilePicture(instructor.profile_picture);
-        } else {
-            setFirstName('');
-            setLastName('');
-            setEmail('');
-            setProfilePicture('');
+        if (isOpen) {
+            if (instructor) {
+                // Editing existing instructor
+                setFormData({
+                    first_name: instructor.first_name || '',
+                    last_name: instructor.last_name || '',
+                    email: instructor.email || '',
+                    profile_picture: instructor.profile_picture || null
+                });
+                setImagePreview(instructor.profile_picture || null);
+            } else {
+                // Adding new instructor
+                setFormData({
+                    first_name: '',
+                    last_name: '',
+                    email: '',
+                    profile_picture: null
+                });
+                setImagePreview(null);
+            }
+            // Reset image file
+            setImageFile(null);
         }
-    }, [instructor]);
+    }, [isOpen, instructor]);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setImageFile(file);
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
+
+    const uploadImage = async () => {
+        if (!imageFile) return formData.profile_picture;
+
+        try {
+            const fileExt = imageFile.name.split('.').pop();
+            const fileName = `${uuidv4()}.${fileExt}`;
+            const filePath = `instructors/${fileName}`;
+
+            // Upload image to Supabase storage
+            const { data, error } = await supabase.storage
+                .from('gclient-store')
+                .upload(filePath, imageFile);
+
+            if (data) {
+                // formData.profile_picture = data.path;
+                console.log(data.path)
+            }
+
+            if (error) {
+                console.error('Error uploading image:', error);
+                toast.error('Failed to upload image');
+                return null;
+            }
+
+            // Get public URL for the uploaded image
+            const { data: urlData } = supabase.storage
+                .from('gclient-store')
+                .getPublicUrl(filePath);
+
+            return urlData.publicUrl;
+        } catch (error) {
+            console.error('Image upload error:', error);
+            toast.error('Image upload failed');
+            return null;
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (instructor) {
-            // Update existing instructor
-            const { error } = await supabase
-                .from('users')
-                .update({ first_name: firstName, last_name: lastName, email: email, profile_picture: profilePicture })
-                .eq('id', instructor.id);
-            if (error) console.error('Error updating instructor:', error);
-            if (error) toast.error('Error updating instructor');
-            if (!error) toast.success('Instructor updated successfully');
-        } else {
-            // Add new instructor
-            const { error } = await supabase
-                .from('users')
-                .insert([{ first_name: firstName, last_name: lastName, email: email, profile_picture: profilePicture, role: 'instructor' }]);
-            if (error) console.error('Error adding instructor:', error);
-            if (error) toast.error('Error adding instructor');
-            if (!error) toast.success('Instructor added successfully');
+        
+        try {
+            // Upload image if a new file is selected
+            const profilePictureUrl = imageFile 
+                ? await uploadImage() 
+                : formData.profile_picture;
+
+            const instructorData = {
+                ...formData,
+                profile_picture: profilePictureUrl,
+                role: 'instructor'
+            };
+
+            let result;
+            if (instructor) {
+                // Update existing instructor
+                result = await supabase
+                    .from('users')
+                    .update(instructorData)
+                    .eq('id', instructor.id);
+                
+                if (result.error) {
+                    console.error('Error updating instructor:', result.error);
+                    toast.error('Failed to update instructor');
+                    return;
+                }
+                
+                toast.success('Instructor updated successfully');
+            } else {
+                // Create new instructor
+                result = await supabase
+                    .from('users')
+                    .insert(instructorData);
+                
+                if (result.error) {
+                    console.error('Error adding instructor:', result.error);
+                    toast.error('Failed to add instructor');
+                    return;
+                }
+                
+                toast.success('Instructor added successfully');
+            }
+
+            // Call onSave to refresh the list
+            onSave();
+            
+            // Close the modal
+            onClose();
+        } catch (error) {
+            console.error('Submission error:', error);
+            toast.error('An unexpected error occurred');
         }
-        onSave(); // Refresh the instructor list
-        onClose(); // Close the modal
     };
 
     if (!isOpen) return null;
@@ -54,12 +149,33 @@ const InstructorModal = ({ isOpen, onClose, instructor, onSave }) => {
             <div className="w-[80%] h-[80%] flex flex-col items-center justify-center bg-[var(--bg-white)] p-[1rem] rounded-[0.3rem]">
                 <h2 className="text-xl font-bold mb-4">{instructor ? 'Edit Instructor' : 'Add Instructor'}</h2>
                 <form onSubmit={handleSubmit} className='w-[80%] flex flex-col justify-center gap-[1rem]'>
+                <div className="mb-4 flex justify-center">
+                        <label className="cursor-pointer">
+                            <input 
+                                type="file" 
+                                accept="image/*" 
+                                onChange={handleImageChange}
+                                className="hidden"
+                            />
+                            <div className="w-[150px] h-[150px] rounded-full border-2 border-gray-300 flex items-center justify-center">
+                                {imagePreview ? (
+                                    <img 
+                                        src={imagePreview} 
+                                        alt="Profile Preview" 
+                                        className="w-full h-full object-cover rounded-full"
+                                    />
+                                ) : (
+                                    <span className="text-gray-500">Upload Photo</span>
+                                )}
+                            </div>
+                        </label>
+                    </div>
                     <div className="mb-4">
                         <label className="block mb-1 text-[0.85rem]">First Name</label>
                         <input
                             type="text"
-                            value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
+                            value={formData.first_name}
+                            onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
                             required
                             className="border border-[var(--primary-grey)] rounded-[0.3rem] p-[0.3rem] w-full bg-[var(--input-bg)] text-[var(--input-text)]"
                         />
@@ -68,8 +184,8 @@ const InstructorModal = ({ isOpen, onClose, instructor, onSave }) => {
                         <label className="block mb-1 text-[0.85rem]">Last Name</label>
                         <input
                             type="text"
-                            value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
+                            value={formData.last_name}
+                            onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
                             required
                             className="border border-[var(--primary-grey)] rounded-[0.3rem] p-[0.3rem] w-full bg-[var(--input-bg)] text-[var(--input-text)]"
                         />
@@ -78,17 +194,9 @@ const InstructorModal = ({ isOpen, onClose, instructor, onSave }) => {
                         <label className="block mb-1 text-[0.85rem]">Email</label>
                         <input
                             type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                             required
-                            className="border border-[var(--primary-grey)] rounded-[0.3rem] p-[0.3rem] w-full bg-[var(--input-bg)] text-[var(--input-text)]"
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block mb-1 text-[0.85rem]">Profile Picture</label>
-                        <input
-                            type="file"
-                            onChange={(e) => setProfilePicture(e.target.files[0])}
                             className="border border-[var(--primary-grey)] rounded-[0.3rem] p-[0.3rem] w-full bg-[var(--input-bg)] text-[var(--input-text)]"
                         />
                     </div>
