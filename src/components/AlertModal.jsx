@@ -18,7 +18,7 @@ const AlertModal = ({ isOpen, onClose, onConfirm, instructor }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-[0] flex flex-col items-center justify-center bg-[var(--primary-black)] opacity-80">
+        <div className="fixed inset-[0] flex flex-col items-center justify-center bg-[var(--primary-grey)] opacity-95">
             <div className="w-[30%] h-[20%] flex flex-col items-center justify-center gap-[1rem] bg-[var(--bg-white)] rounded-[0.3rem] shadow-[var(--shadow-md)] p-[1rem]">
                 <p className="text-gray-600 mb-4 flex flex-col items-center justify-center">
                     Are you sure you want to delete this instructor?
