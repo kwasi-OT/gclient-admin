@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { FaStar, FaUserGraduate, FaChalkboardTeacher, FaComment } from 'react-icons/fa';
+import { IoClose } from 'react-icons/io5';
 
 const CourseDetailModal = ({ isOpen, onClose, courseId, courseStats }) => {
     const [course, setCourse] = useState(null);
@@ -83,8 +84,14 @@ const CourseDetailModal = ({ isOpen, onClose, courseId, courseStats }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white p-6 rounded-lg w-[900px] max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-[0] bg-[var(--primary-grey)] opacity-95 flex items-center justify-center z-50">
+            <div className="bg-[var(--bg-white)] w-[90%] max-w-[900px] max-h-[90vh] overflow-y-auto rounded-[0.3rem] shadow-[var(--shadow-md)] p-[1rem] relative">
+                <button 
+                    onClick={onClose} 
+                    className="absolute top-4 right-[1rem] text-gray-600 hover:text-gray-900 bg-[var(--primary-blue)]"
+                >
+                    <IoClose size={30} />
+                </button>
                 <h2 className="text-2xl mb-4 text-center">Course Details</h2>
                 
                 {loading ? (
@@ -96,9 +103,10 @@ const CourseDetailModal = ({ isOpen, onClose, courseId, courseStats }) => {
                 ) : course ? (
                     <div className="space-y-4">
                         {/* Course Overview */}
-                        <div className="grid grid-cols-3 gap-4">
+                        <div className="grid grid-cols-3 gap-[1rem]">
                             <div className="col-span-2">
                                 <h3 className="text-xl font-semibold mb-2">{course.title}</h3>
+                                <h3>Description:</h3>
                                 <p className="text-gray-600">{course.description}</p>
                             </div>
                             <div className="flex flex-col items-end">

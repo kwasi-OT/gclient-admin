@@ -3,6 +3,9 @@ import { supabase } from '../server/supabaseClient';
 import toast from 'react-hot-toast';
 import PropTypes from 'prop-types';
 import { BeatLoader } from 'react-spinners';
+import { v4 as uuidv4 } from 'uuid';
+import { FaCloudUploadAlt, FaTrash } from 'react-icons/fa';
+
 
 const CourseModal = ({ isOpen, onClose, course, onSave }) => {
     const [formData, setFormData] = useState({
@@ -13,14 +16,19 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
         price: '',
         instructor_id: null,
         media: {
-            image: '',
-            video: '',
-            text: ''
+            image: null,
+            video: null,
+            pdf: null
         }
     });
     const [loading, setLoading] = useState(false);
     const [instructors, setInstructors] = useState([]);
     const [requirementInput, setRequirementInput] = useState('');
+    const [fileLoading, setFileLoading] = useState({
+        image: false,
+        video: false,
+        pdf: false
+    });
 
     // Fetch instructors on component mount
     useEffect(() => {
@@ -53,9 +61,9 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
                     price: course.price || '',
                     instructor_id: course.instructor_id,
                     media: course.media || {
-                        image: '',
-                        video: '',
-                        text: ''
+                        image: null,
+                        video: null,
+                        pdf: null
                     }
                 });
             } else {
@@ -68,14 +76,98 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
                     price: '',
                     instructor_id: null,
                     media: {
-                        image: '',
-                        video: '',
-                        text: ''
+                        image: null,
+                        video: null,
+                        pdf: null
                     }
                 });
             }
         }
     }, [isOpen, course]);
+
+    // File upload handler
+    const handleFileUpload = async (file, type) => {
+        if (!file) return null;
+
+        setFileLoading(prev => ({ ...prev, [type]: true }));
+        try {
+            // Generate a unique filename
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${uuidv4()}.${fileExt}`;
+            const filePath = `course-media/${fileName}`;
+
+            // Upload file to Supabase storage
+            const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('gclient-store')
+                .upload(filePath, file);
+
+            if (uploadData) {
+                console.log(uploadData);
+            }
+
+            if (uploadError) {
+                throw uploadError;
+            }
+
+            // Get public URL
+            const { data: { publicUrl }, error: urlError } = supabase.storage
+                .from('gclient-store')
+                .getPublicUrl(filePath);
+
+            if (urlError) {
+                throw urlError;
+            }
+
+            // Update form data with file URL
+            setFormData(prev => ({
+                ...prev,
+                media: {
+                    ...prev.media,
+                    [type]: publicUrl
+                }
+            }));
+
+            toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} uploaded successfully`);
+            return publicUrl;
+        } catch (error) {
+            console.error(`Error uploading ${type}:`, error);
+            toast.error(`Failed to upload ${type}`);
+            return null;
+        } finally {
+            setFileLoading(prev => ({ ...prev, [type]: false }));
+        }
+    };
+
+    // File removal handler
+    const handleFileRemove = async (type) => {
+        try {
+            // If there's an existing file, remove it from storage
+            if (formData.media[type]) {
+                const fileName = formData.media[type].split('/').pop();
+                const { error } = await supabase.storage
+                    .from('course-content')
+                    .remove([`course-media/${fileName}`]);
+
+                if (error) {
+                    console.error(`Error removing ${type}:`, error);
+                }
+            }
+
+            // Update form data
+            setFormData(prev => ({
+                ...prev,
+                media: {
+                    ...prev.media,
+                    [type]: null
+                }
+            }));
+
+            toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} removed`);
+        } catch (error) {
+            console.error(`Error removing ${type}:`, error);
+            toast.error(`Failed to remove ${type}`);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -204,7 +296,7 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
                                 className="border border-[var(--primary-grey)] rounded-[0.3rem] p-[0.3rem] w-full bg-[var(--input-bg)] text-[var(--input-text)]"
                             />
                         </div>
-                        <div className="mb-4">
+                        <div className="mb-4 col-span-2">
                             <label className="block mb-1 text-[0.85rem]">Course Requirements</label>
                             <div className="flex">
                                 <input
@@ -240,39 +332,137 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
                                 ))}
                             </div>
                         </div>
-                        <div className="mb-4 col-span-2">
-                            <label className="block mb-1 text-[0.85rem]">Media URLs</label>
-                            <div className="flex flex-col gap-[0.8rem]">
+                    </div> 
+                    <div className="mb-4 col-span-2">
+                        <label className="block mb-1 text-[0.85rem]">Course Media</label>
+                        <div className="flex flex-col gap-[0.8rem]">
+                            {/* Image Upload */}
+                            <div className="flex items-center gap-2">
                                 <input
-                                    type="text"
-                                    placeholder="Image URL"
-                                    value={formData.media.image}
-                                    onChange={(e) => setFormData(prev => ({
-                                        ...prev,
-                                        media: { ...prev.media, image: e.target.value }
-                                    }))}
-                                    className="border border-[var(--primary-grey)] rounded-[0.3rem] p-[0.3rem] w-full bg-[var(--input-bg)] text-[var(--input-text)]"
+                                    type="file"
+                                    id="imageUpload"
+                                    accept="image/*"
+                                    onChange={(e) => handleFileUpload(e.target.files[0], 'image')}
+                                    className="hidden"
                                 />
+                                <label 
+                                    htmlFor="imageUpload" 
+                                    className="flex items-center gap-2 cursor-pointer bg-[var(--light-blue)] text-[var(--primary-blue)] px-3 py-2 rounded-[0.3rem]"
+                                >
+                                    {fileLoading.image ? (
+                                        <BeatLoader size={6} color="var(--primary-blue)" />
+                                    ) : (
+                                        <>
+                                            <FaCloudUploadAlt />
+                                            Upload Image
+                                        </>
+                                    )}
+                                </label>
+                                {formData.media.image && (
+                                    <div className="flex items-center gap-2">
+                                        <a 
+                                            href={formData.media.image} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer" 
+                                            className="text-[var(--primary-blue)] underline"
+                                        >
+                                            View Image
+                                        </a>
+                                        <button 
+                                            type="button"
+                                            onClick={() => handleFileRemove('image')}
+                                            className="text-[var(--primary-red)]"
+                                        >
+                                            <FaTrash />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Video Upload */}
+                            <div className="flex items-center gap-2">
                                 <input
-                                    type="text"
-                                    placeholder="Video URL"
-                                    value={formData.media.video}
-                                    onChange={(e) => setFormData(prev => ({
-                                        ...prev,
-                                        media: { ...prev.media, video: e.target.value }
-                                    }))}
-                                    className="border border-[var(--primary-grey)] rounded-[0.3rem] p-[0.3rem] w-full bg-[var(--input-bg)] text-[var(--input-text)]"
+                                    type="file"
+                                    id="videoUpload"
+                                    accept="video/*"
+                                    onChange={(e) => handleFileUpload(e.target.files[0], 'video')}
+                                    className="hidden"
                                 />
+                                <label 
+                                    htmlFor="videoUpload" 
+                                    className="flex items-center gap-2 cursor-pointer bg-[var(--light-blue)] text-[var(--primary-blue)] px-3 py-2 rounded-[0.3rem]"
+                                >
+                                    {fileLoading.video ? (
+                                        <BeatLoader size={6} color="var(--primary-blue)" />
+                                    ) : (
+                                        <>
+                                            <FaCloudUploadAlt />
+                                            Upload Video
+                                        </>
+                                    )}
+                                </label>
+                                {formData.media.video && (
+                                    <div className="flex items-center gap-2">
+                                        <a 
+                                            href={formData.media.video} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer" 
+                                            className="text-[var(--primary-blue)] underline"
+                                        >
+                                            View Video
+                                        </a>
+                                        <button 
+                                            type="button"
+                                            onClick={() => handleFileRemove('video')}
+                                            className="text-[var(--primary-red)]"
+                                        >
+                                            <FaTrash />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* PDF Upload */}
+                            <div className="flex items-center gap-2">
                                 <input
-                                    type="text"
-                                    placeholder="Additional Text"
-                                    value={formData.media.text}
-                                    onChange={(e) => setFormData(prev => ({
-                                        ...prev,
-                                        media: { ...prev.media, text: e.target.value }
-                                    }))}
-                                    className="border border-[var(--primary-grey)] rounded-[0.3rem] p-[0.3rem] w-full bg-[var(--input-bg)] text-[var(--input-text)]"
+                                    type="file"
+                                    id="pdfUpload"
+                                    accept=".pdf"
+                                    onChange={(e) => handleFileUpload(e.target.files[0], 'pdf')}
+                                    className="hidden"
                                 />
+                                <label 
+                                    htmlFor="pdfUpload" 
+                                    className="flex items-center gap-2 cursor-pointer bg-[var(--light-blue)] text-[var(--primary-blue)] px-3 py-2 rounded-[0.3rem]"
+                                >
+                                    {fileLoading.pdf ? (
+                                        <BeatLoader size={6} color="var(--primary-blue)" />
+                                    ) : (
+                                        <>
+                                            <FaCloudUploadAlt />
+                                            Upload PDF
+                                        </>
+                                    )}
+                                </label>
+                                {formData.media.pdf && (
+                                    <div className="flex items-center gap-2">
+                                        <a 
+                                            href={formData.media.pdf} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer" 
+                                            className="text-[var(--primary-blue)] underline"
+                                        >
+                                            View PDF
+                                        </a>
+                                        <button 
+                                            type="button"
+                                            onClick={() => handleFileRemove('pdf')}
+                                            className="text-[var(--primary-red)]"
+                                        >
+                                            <FaTrash />
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
