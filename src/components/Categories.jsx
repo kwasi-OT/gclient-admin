@@ -133,12 +133,12 @@ const Categories = () => {
                 <Skeleton count={10} height={40}/>
             ) : (
                 <table className="w-full bg-[var(--input-bg)]">
-                    <thead>
-                        <tr>
-                            <th className="px-[1rem] py-[1rem]">Category Name</th>
-                            <th className="px-[1rem] py-[1rem]">Sub-Categories</th>
-                            <th className="px-[1rem] py-[1rem]">Date Created</th>
-                            <th className="px-[1rem] py-[1rem]">Actions</th>
+                    <thead className="w-full">
+                        <tr className="w-full">
+                            <th className="px-[1rem] py-[1rem] w-[20%]">Category Name</th>
+                            <th className="px-[1rem] py-[1rem] w-[40%]">Sub-Categories</th>
+                            <th className="px-[1rem] py-[1rem] w-[10%]">Date Created</th>
+                            <th className="px-[1rem] py-[1rem] w-[20%]">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
