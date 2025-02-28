@@ -3,6 +3,7 @@ import { supabase } from '../server/supabaseClient';
 import toast from 'react-hot-toast';
 import { v4 as uuidv4 } from 'uuid';
 import PropTypes from 'prop-types';
+import { BeatLoader } from 'react-spinners';
 
 const StudentModal = ({ isOpen, onClose, student, onSave }) => {
     const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
     });
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     // Reset form when modal opens or closes
     useEffect(() => {
@@ -88,7 +90,7 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+        setLoading(true);
         try {
             // Upload image if a new file is selected
             const profilePictureUrl = imageFile 
@@ -140,6 +142,8 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
             console.error('Submission error:', error);
             toast.error('An unexpected error occurred');
         }
+
+        setLoading(false);
     };
 
     if (!isOpen) return null;
@@ -202,7 +206,9 @@ const StudentModal = ({ isOpen, onClose, student, onSave }) => {
                     </div>
                     <div className="flex justify-center gap-[1rem]">
                         <button type="button" onClick={onClose} className="mr-2 bg-[var(--primary-blue)] hover:bg-[var(--logo-blue)] px-4 py-2 rounded-[0.3rem]">Cancel</button>
-                        <button type="submit" className="bg-[var(--primary-blue)] hover:bg-[var(--logo-blue)] text-white px-4 py-2 rounded-[0.3rem]">{student ? 'Update' : 'Add'}</button>
+                        <button type="submit" className="bg-[var(--primary-blue)] hover:bg-[var(--logo-blue)] text-white px-4 py-2 rounded-[0.3rem]" disabled={loading}>
+                            {loading ? <BeatLoader size={6} color="white" /> : student ? 'Update' : 'Add'}
+                        </button>
                     </div>
                 </form>
             </div>
