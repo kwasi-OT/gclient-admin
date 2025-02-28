@@ -84,8 +84,6 @@ const Instructors = () => {
         setModalOpen(true);
     };
 
-    // const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
     // Calculate total pages
     const totalPages = Math.ceil(totalInstructors / instructorsPerPage);
     
