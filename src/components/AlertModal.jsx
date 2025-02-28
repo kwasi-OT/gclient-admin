@@ -2,7 +2,7 @@ import { supabase } from "../server/supabaseClient";
 import toast from 'react-hot-toast';
 import PropTypes from 'prop-types';
 
-const AlertModal = ({ isOpen, onClose, onConfirm, instructor, student }) => {
+const AlertModal = ({ isOpen, onClose, onConfirm, instructor, student, category }) => {
     const handleDelete = async (id) => {
         const { error } = await supabase.from("users").delete().eq("id", id);
         if (error) {
@@ -39,6 +39,16 @@ const AlertModal = ({ isOpen, onClose, onConfirm, instructor, student }) => {
                     <button onClick={() => handleDelete(student.id)} className="px-4 py-2 bg-[var(--primary-red)] hover:bg-[var(--student-card-bg)] text-white rounded-md">Delete</button>
                 </div>
             </div>}
+            {category && <div className="w-[30%] h-[20%] flex flex-col items-center justify-center gap-[1rem] bg-[var(--bg-white)] rounded-[0.3rem] shadow-[var(--shadow-md)] p-[1rem]">
+                <p className="text-gray-600 mb-4 flex flex-col items-center justify-center">
+                    Are you sure you want to delete this category?
+                    <span className="font-[600]">{category.name}</span>
+                </p>
+                <div className="w-[100%] h-[90%] flex flex-row items-center justify-center mt-[-1.5rem] gap-[1rem]">
+                    <button onClick={onClose} className="px-4 py-2 bg-[var(--primary-blue)] hover:bg-[var(--logo-blue)] rounded-md mr-2">Cancel</button>
+                    <button onClick={() => handleDelete(category.id)} className="px-4 py-2 bg-[var(--primary-red)] hover:bg-[var(--student-card-bg)] text-white rounded-md">Delete</button>
+                </div>
+            </div>}
         </div>
     )
 }
@@ -48,7 +58,9 @@ AlertModal.propTypes = {
     onClose: PropTypes.func.isRequired,
     onConfirm: PropTypes.func.isRequired,
     instructor: PropTypes.object.isRequired,
-    student: PropTypes.object.isRequired
+    student: PropTypes.object.isRequired,
+    category: PropTypes.object.isRequired,
+    subCategory: PropTypes.object.isRequired
 }
 
 export default AlertModal

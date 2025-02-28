@@ -58,16 +58,6 @@ const InstructorDetailModal = ({ isOpen, onClose, instructorId }) => {
 
     if (!isOpen) return null;
 
-    // if (loading) {
-    //     return (
-    //         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    //             <div className="bg-white p-6 rounded-lg">
-    //                 <p>Loading instructor details...</p>
-    //             </div>
-    //         </div>
-    //     );
-    // }
-
     return (
         <div className="fixed inset-[0] bg-[var(--primary-grey)] opacity-95 flex items-center justify-center z-50">
             <div className="bg-[var(--bg-white)] w-[90%] max-w-[800px] max-h-[90vh] overflow-y-auto rounded-[0.3rem] shadow-[var(--shadow-md)] p-[1rem] relative">
