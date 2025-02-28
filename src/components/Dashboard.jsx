@@ -5,11 +5,14 @@ import { GiBookshelf } from "react-icons/gi";
 import { useState } from "react";
 import { useEffect } from "react";
 import { supabase } from "../server/supabaseClient";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const Dashboard = () => {
     const [studentsCount, setStudentsCount] = useState(0);
     const [instructorsCount, setInstructorsCount] = useState(0);
     const [coursesCount, setCoursesCount] = useState(0);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchData();
@@ -26,7 +29,7 @@ const Dashboard = () => {
         setStudentsCount(studentsCount);
         setInstructorsCount(instructorsCount);
         setCoursesCount(coursesCount);
-        
+        setLoading(false);
     }
 
     return (
@@ -41,8 +44,8 @@ const Dashboard = () => {
                             <h3 className="text-[var(--bg-white)]">Total Students</h3>
                         </div>
                     </div>
-                    <div className="card-bottom w-[100%] h-[30%] flex items-center justify-center">
-                        <p className="text-[3rem] text-[var(--bg-white)]">{studentsCount}</p>
+                    <div className="card-bottom w-[100%] h-[40%] flex items-end justify-center">
+                        {loading ? <Skeleton width={100} height={30} /> : <p className="text-[3.5rem] font-[500] text-[var(--bg-white)]">{studentsCount}</p>}
                     </div>
                 </div>
                 <div className="card w-[30%] h-[100%] flex flex-col justify-between items-center shadow-(--shadow-md) border border-[var(--primary-grey)] bg-[var(--instructor-card-bg)] rounded-[1rem]">
@@ -54,8 +57,8 @@ const Dashboard = () => {
                             <h3 className="text-[var(--bg-white)]">Total Instructors</h3>
                         </div>
                     </div>
-                    <div className="card-bottom w-[100%] h-[30%] flex items-center justify-center">
-                        <p className="text-[3rem] text-[var(--bg-white)]">{instructorsCount}</p>
+                    <div className="card-bottom w-[100%] h-[40%] flex items-end justify-center">
+                        {loading ? <Skeleton width={100} height={30} /> : <p className="text-[3.5rem] font-[500] text-[var(--bg-white)]">{instructorsCount}</p>}
                     </div>
                 </div>
                 <div className="card w-[30%] h-[100%] shadow-(--shadow-md) border border-[var(--primary-grey)] bg-[var(--course-card-bg)] rounded-[1rem]">
@@ -67,8 +70,8 @@ const Dashboard = () => {
                             <h3 className="text-[var(--bg-white)]">Total Courses</h3>
                         </div>
                     </div>
-                    <div className="card-bottom w-[100%] h-[30%] flex items-center justify-center">
-                        <p className="text-[3rem] text-[var(--bg-white)]">{coursesCount}</p>
+                    <div className="card-bottom w-[100%] h-[40%] flex items-end justify-center">
+                        {loading ? <Skeleton width={100} height={30} /> : <p className="text-[3.5rem] font-[500] text-[var(--bg-white)]">{coursesCount}</p>}
                     </div>
                 </div>
             </div>
