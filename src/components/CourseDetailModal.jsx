@@ -3,8 +3,8 @@ import { supabase } from '../server/supabaseClient';
 import PropTypes from 'prop-types';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-import { FaStar, FaUserGraduate, FaChalkboardTeacher, FaComment } from 'react-icons/fa';
-import { IoClose } from 'react-icons/io5';
+import { FaStar, FaUserGraduate, FaChalkboardTeacher, FaComment, FaMoneyCheckAlt, FaFilePdf } from 'react-icons/fa';
+import { IoClose, IoDownload } from 'react-icons/io5';
 import { FaBook } from 'react-icons/fa';
 
 const CourseDetailModal = ({ isOpen, onClose, courseId, courseStats }) => {
@@ -91,6 +91,40 @@ const CourseDetailModal = ({ isOpen, onClose, courseId, courseStats }) => {
 
     if (!isOpen) return null;
 
+    // Render PDF preview or download link
+    const renderPDFPreview = () => {
+        if (!course || !course.media || !course.media.pdf) return null;
+
+        return (
+            <div className="mt-4">
+                <h4 className="text-lg font-semibold mb-2 flex items-center gap-[0.5rem]">
+                    <FaFilePdf color="var(--primary-red)" />
+                    Course Materials
+                </h4>
+                <div className="flex items-center gap-[1rem] bg-gray-100 p-4 rounded-lg">
+                    <a 
+                        href={course.media.pdf} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-[0.5rem] text-[var(--primary-blue)] hover:underline"
+                    >
+                        <FaFilePdf />
+                        View PDF
+                    </a>
+                    <a 
+                        href={course.media.pdf} 
+                        download
+                        className="flex items-center gap-[0.5rem] text-[var(--primary-green)] hover:underline"
+                    >
+                        <IoDownload />
+                        Download PDF
+                    </a>
+                </div>
+            </div>
+        );
+    };
+
+
     return (
         <div className="fixed inset-[0] bg-[var(--primary-grey)] opacity-95 flex items-center justify-center z-50">
             <div className="bg-[var(--bg-white)] w-[90%] max-w-[900px] max-h-[90vh] overflow-y-auto rounded-[0.3rem] shadow-[var(--shadow-md)] p-[1rem] relative">
@@ -118,13 +152,17 @@ const CourseDetailModal = ({ isOpen, onClose, courseId, courseStats }) => {
                                 <p className="text-gray-600">{course.description}</p>
                             </div>
                             <div className="flex flex-col items-end">
-                                <div className="flex items-center gap-2">
-                                    <FaStar color="var(--primary-yellow)" size={24}/>
+                                <div className="flex items-center gap-[0.3rem]">
+                                    <FaStar color="var(--instructor-card-bg)" size={24}/>
                                     <span className="text-xl">{courseStats?.averageRating || 'N/A'}</span>
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-[0.3rem]">
                                     <FaUserGraduate color="var(--primary-blue)" size={24}/>
                                     <span className="text-xl">{courseStats?.enrollmentsCount || 0} Enrolled</span>
+                                </div>
+                                <div className="flex items-center gap-[0.3rem]">
+                                    <FaMoneyCheckAlt color="var(--primary-blue)" size={24}/>
+                                    <span className="text-xl">${course.price || 0}.00</span>
                                 </div>
                             </div>
                         </div>
@@ -143,7 +181,7 @@ const CourseDetailModal = ({ isOpen, onClose, courseId, courseStats }) => {
                             <div className="bg-gray-100 p-4 rounded-lg">
                                 <h4 className="text-lg font-semibold mb-2 flex items-center gap-[0.5rem]">
                                     <FaBook className="mr-2" color="var(--primary-blue)"/>
-                                    Category
+                                    Category Details
                                 </h4>
                                 <p><strong>Category:</strong> {category}</p>
                                 <p><strong>Sub-category:</strong> {subCategory}</p>
@@ -166,8 +204,40 @@ const CourseDetailModal = ({ isOpen, onClose, courseId, courseStats }) => {
                             </div>
                         </div>
 
+                        {/* Media Section */}
+                        <div className="grid grid-cols-2 gap-4">
+                            {/* Course Image */}
+                            {course.media?.image && (
+                                <div>
+                                    <h4 className="text-lg font-semibold mb-2">Course Image</h4>
+                                    <img 
+                                        src={course.media.image} 
+                                        alt={`${course.title} cover`} 
+                                        className="w-full h-[300px] object-cover rounded-lg"
+                                    />
+                                </div>
+                            )}
+                            
+                            {/* Course Video */}
+                            {course.media?.video && (
+                                <div>
+                                    <h4 className="text-lg font-semibold mb-2">Course Preview</h4>
+                                    <video 
+                                        controls 
+                                        className="w-full h-[300px] rounded-lg"
+                                    >
+                                        <source src={course.media.video} type="video/mp4" />
+                                        Your browser does not support the video tag.
+                                    </video>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* PDF Preview */}
+                        {renderPDFPreview()}
+
                         {/* Media */}
-                        {course.media && (
+                        {/* {course.media && (
                             <div className="mt-4">
                                 <h4 className="text-lg font-semibold mb-2">Media</h4>
                                 <div className="grid grid-cols-3 gap-4">
@@ -192,12 +262,12 @@ const CourseDetailModal = ({ isOpen, onClose, courseId, courseStats }) => {
                                     )}
                                 </div>
                             </div>
-                        )}
+                        )} */}
 
                         {/* Reviews Section */}
-                        <div className="mt-4">
+                        <div className="mt-[2rem]">
                             <h4 className="text-lg font-semibold mb-2 flex items-center">
-                                <FaComment className="mr-2" color="var(--primary-blue)"/>
+                                <FaComment className="mr-[0.5rem]" color="var(--primary-blue)"/>
                                 Course Reviews ({reviews.length})
                             </h4>
                             {reviews.length > 0 ? (
@@ -230,7 +300,7 @@ const CourseDetailModal = ({ isOpen, onClose, courseId, courseStats }) => {
                         {/* Enrollments Section */}
                         <div className="mt-4">
                             <h4 className="text-lg font-semibold mb-2 flex items-center">
-                                <FaUserGraduate className="mr-2" color="var(--primary-blue)"/>
+                                <FaUserGraduate className="mr-[0.5rem]" color="var(--primary-blue)"/>
                                 Enrolled Students ({enrollments.length})
                             </h4>
                             {enrollments.length > 0 ? (
