@@ -5,12 +5,15 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { FaStar, FaUserGraduate, FaChalkboardTeacher, FaComment } from 'react-icons/fa';
 import { IoClose } from 'react-icons/io5';
+import { FaBook } from 'react-icons/fa';
 
 const CourseDetailModal = ({ isOpen, onClose, courseId, courseStats }) => {
     const [course, setCourse] = useState(null);
     const [loading, setLoading] = useState(true);
     const [reviews, setReviews] = useState([]);
     const [enrollments, setEnrollments] = useState([]);
+    const [category, setCategory] = useState([]);
+    const [subCategory, setSubCategory] = useState([]);
 
     useEffect(() => {
         const fetchCourseDetails = async () => {
@@ -23,7 +26,9 @@ const CourseDetailModal = ({ isOpen, onClose, courseId, courseStats }) => {
                     .from('courses')
                     .select(`
                         *,
-                        users!inner(id, first_name, last_name, email)
+                        users:instructor_id (first_name, last_name, email),
+                        categories:category_id (name),
+                        sub_categories:sub_category_id (name)
                     `)
                     .eq('id', courseId)
                     .single();
@@ -62,6 +67,9 @@ const CourseDetailModal = ({ isOpen, onClose, courseId, courseStats }) => {
                 setCourse(courseData);
                 setReviews(reviewsData || []);
                 setEnrollments(enrollmentsData || []);
+                // Set category and sub-category directly from the joined query
+                setCategory(courseData.categories?.name || 'Not Specified');
+                setSubCategory(courseData.sub_categories?.name || 'Not Specified');
             } catch (error) {
                 console.error('Unexpected error:', error);
             } finally {
@@ -121,14 +129,25 @@ const CourseDetailModal = ({ isOpen, onClose, courseId, courseStats }) => {
                             </div>
                         </div>
 
-                        {/* Instructor Details */}
-                        <div className="bg-gray-100 p-4 rounded-lg">
-                            <h4 className="text-lg font-semibold mb-2 flex items-center">
-                                <FaChalkboardTeacher className="mr-2" color="var(--primary-blue)"/>
-                                Instructor Details
-                            </h4>
-                            <p><strong>Name:</strong> {course.users.first_name} {course.users.last_name}</p>
-                            <p><strong>Email:</strong> {course.users.email}</p>
+                        <div className='grid grid-cols-2 gap-4'>
+                            {/* Instructor Details */}
+                            <div className="bg-gray-100 p-4 rounded-lg">
+                                <h4 className="text-lg font-semibold mb-2 flex items-center gap-[0.5rem]">
+                                    <FaChalkboardTeacher className="mr-2" color="var(--primary-blue)"/>
+                                    Instructor Details
+                                </h4>
+                                <p><strong>Name:</strong> {course.users.first_name} {course.users.last_name}</p>
+                                <p><strong>Email:</strong> {course.users.email}</p>
+                            </div>
+                            {/* Category Details */}
+                            <div className="bg-gray-100 p-4 rounded-lg">
+                                <h4 className="text-lg font-semibold mb-2 flex items-center gap-[0.5rem]">
+                                    <FaBook className="mr-2" color="var(--primary-blue)"/>
+                                    Category
+                                </h4>
+                                <p><strong>Category:</strong> {category}</p>
+                                <p><strong>Sub-category:</strong> {subCategory}</p>
+                            </div>
                         </div>
 
                         {/* Course Details */}
@@ -166,9 +185,9 @@ const CourseDetailModal = ({ isOpen, onClose, courseId, courseStats }) => {
                                             className="w-full h-[200px] rounded-lg"
                                         />
                                     )}
-                                    {course.media.text && (
+                                    {course.media.pdf && (
                                         <div className="bg-gray-100 p-4 rounded-lg">
-                                            <p>{course.media.text}</p>
+                                            <p>{course.media.pdf}</p>
                                         </div>
                                     )}
                                 </div>

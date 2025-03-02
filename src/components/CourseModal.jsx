@@ -15,6 +15,8 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
         requirements: [],
         price: '',
         instructor_id: null,
+        category_id: null,
+        sub_category_id: null,
         media: {
             image: null,
             video: null,
@@ -23,6 +25,8 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
     });
     const [loading, setLoading] = useState(false);
     const [instructors, setInstructors] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [subCategories, setSubCategories] = useState([]);
     const [requirementInput, setRequirementInput] = useState('');
     const [fileLoading, setFileLoading] = useState({
         image: false,
@@ -48,6 +52,63 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
         fetchInstructors();
     }, []);
 
+    // fetch categories on component mount
+    useEffect(() => {
+        const fetchCategories = async () => {
+            const { data: categories, error } = await supabase
+                .from('categories')
+                .select('*')
+
+            if (error) {
+                console.error('Error fetching categories:', error);
+            } else {
+                setCategories(categories);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+    // fetch sub-categories on category change
+    useEffect(() => {
+        const fetchSubCategories = async () => {
+            if (!formData.category_id) {
+                setSubCategories([]);
+                return;
+            }
+
+            try {
+                const { data: subCategories, error } = await supabase
+                    .from('sub_categories')
+                    .select('*')
+                    .eq('category_id', formData.category_id)
+                    .eq('archived', false)
+                    .order('name');
+
+                if (error) {
+                    console.error('Error fetching sub-categories:', error);
+                    setSubCategories([]);
+                } else {
+                    setSubCategories(subCategories);
+                    
+                    // Reset sub-category if it's not in the new list
+                    if (formData.sub_category_id && 
+                        !subCategories.some(sc => sc.id === formData.sub_category_id)) {
+                        setFormData(prev => ({
+                            ...prev,
+                            sub_category_id: null
+                        }));
+                    }
+                }
+            } catch (error) {
+                console.error('Unexpected error:', error);
+                setSubCategories([]);
+            }
+        };
+
+        fetchSubCategories();
+    }, [formData.category_id, formData.sub_category_id]);
+
     // Reset or populate form when modal opens/changes
     useEffect(() => {
         if (isOpen) {
@@ -59,7 +120,9 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
                     overview: course.overview || '',
                     requirements: course.requirements || [],
                     price: course.price || '',
-                    instructor_id: course.instructor_id,
+                    instructor_id: course.instructor_id || null,
+                    category_id: course.category_id || null,
+                    sub_category_id: course.sub_category_id || null,
                     media: course.media || {
                         image: null,
                         video: null,
@@ -75,6 +138,8 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
                     requirements: [],
                     price: '',
                     instructor_id: null,
+                    category_id: null,
+                    sub_category_id: null,
                     media: {
                         image: null,
                         video: null,
@@ -264,6 +329,38 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
                                 {instructors.map(instructor => (
                                     <option key={instructor.id} value={instructor.id}>
                                         {instructor.first_name} {instructor.last_name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="mb-4">
+                            <label className="block mb-1 text-[0.85rem]">Category</label>
+                            <select
+                                value={formData.category_id || ''}
+                                onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+                                required
+                                className="border border-[var(--primary-grey)] rounded-[0.3rem] p-[0.3rem] w-full bg-[var(--input-bg)] text-[var(--input-text)]"
+                            >
+                                <option value="">Select Category</option>
+                                {categories.map(category => (
+                                    <option key={category.id} value={category.id}>
+                                        {category.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="mb-4">
+                            <label className="block mb-1 text-[0.85rem]">Sub-Category</label>
+                            <select
+                                value={formData.sub_category_id || ''}
+                                onChange={(e) => setFormData({ ...formData, sub_category_id: e.target.value })}
+                                required
+                                className="border border-[var(--primary-grey)] rounded-[0.3rem] p-[0.3rem] w-full bg-[var(--input-bg)] text-[var(--input-text)]"
+                            >
+                                <option value="">Select Category</option>
+                                {subCategories.map(category => (
+                                    <option key={category.id} value={category.id}>
+                                        {category.name}
                                     </option>
                                 ))}
                             </select>
