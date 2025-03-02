@@ -235,9 +235,9 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
     if (!isOpen) return null;
 
     return (
-        <div className="w-[50%] h-fit py-[2rem] absolute right-[15%] top-[8%] flex items-center justify-center bg-[var(--primary-grey)] opacity-95 shadow-[var(--shadow-md)]">
-            <div className="w-[80%] h-[80%] flex flex-col items-center justify-center bg-[var(--bg-white)] p-[1rem] rounded-[0.3rem]">
-                <h2 className="text-2xl mb-4 text-center">
+        <div className="fixed inset-[0] flex flex-col items-center justify-center bg-[var(--primary-grey)] opacity-95 z-50">
+            <div className="w-[90%] max-w-[900px] max-h-[90vh] overflow-y-scroll flex flex-col items-center justify-center bg-[var(--bg-white)] p-[1rem] rounded-[0.3rem]">
+                <h2 className="pt-[4rem] text-2xl text-center">
                     {course ? 'Edit Course' : 'Add New Course'}
                 </h2>
                 <form onSubmit={handleSubmit} className='w-[95%] flex flex-col justify-center gap-[1rem]'>
@@ -296,9 +296,9 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
                                 className="border border-[var(--primary-grey)] rounded-[0.3rem] p-[0.3rem] w-full bg-[var(--input-bg)] text-[var(--input-text)]"
                             />
                         </div>
-                        <div className="mb-4 col-span-2">
+                        <div className="mb-4 col-span-2 grid gap-[1rem]">
                             <label className="block mb-1 text-[0.85rem]">Course Requirements</label>
-                            <div className="flex">
+                            <div className="flex gap-[1rem]">
                                 <input
                                     type="text"
                                     value={requirementInput}
@@ -314,19 +314,19 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
                                     Add
                                 </button>
                             </div>
-                            <div className="mt-2 flex flex-wrap gap-2">
+                            <div className="mt-2 flex flex-wrap gap-[0.5rem]">
                                 {formData.requirements.map((req, index) => (
                                     <span 
                                         key={index} 
-                                        className="bg-[var(--light-blue)] text-[var(--primary-blue)] px-2 py-1 rounded-full text-xs flex items-center"
+                                        className="bg-[var(--light-blue)] text-[var(--primary-blue)] px-[0.5rem] py-[0.2rem] rounded-full text-xs flex items-center gap-[0.5rem]"
                                     >
                                         {req}
                                         <button 
                                             type="button"
                                             onClick={() => removeRequirement(index)}
-                                            className="ml-2 text-[var(--primary-red)]"
+                                            className="flex flex-col justify-center items-center bg-[var(--bg-white)] text-[0.9rem] font-[700] text-[var(--primary-red)] px-[0.5rem] py-[0.2rem] rounded-full"
                                         >
-                                            ×
+                                            x
                                         </button>
                                     </span>
                                 ))}
@@ -337,7 +337,7 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
                         <label className="block mb-1 text-[0.85rem]">Course Media</label>
                         <div className="flex flex-col gap-[0.8rem]">
                             {/* Image Upload */}
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-[0.5rem]">
                                 <input
                                     type="file"
                                     id="imageUpload"
@@ -359,7 +359,7 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
                                     )}
                                 </label>
                                 {formData.media.image && (
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-[0.5rem]">
                                         <a 
                                             href={formData.media.image} 
                                             target="_blank" 
@@ -371,7 +371,7 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
                                         <button 
                                             type="button"
                                             onClick={() => handleFileRemove('image')}
-                                            className="text-[var(--primary-red)]"
+                                            className="text-[var(--primary-red)] bg-[var(--input-error-bg)] px-[0.5rem] py-[0.2rem] rounded-[0.3rem]"
                                         >
                                             <FaTrash />
                                         </button>
@@ -380,7 +380,7 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
                             </div>
 
                             {/* Video Upload */}
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-[0.5rem]">
                                 <input
                                     type="file"
                                     id="videoUpload"
@@ -402,7 +402,7 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
                                     )}
                                 </label>
                                 {formData.media.video && (
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-[0.5rem]">
                                         <a 
                                             href={formData.media.video} 
                                             target="_blank" 
@@ -414,7 +414,7 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
                                         <button 
                                             type="button"
                                             onClick={() => handleFileRemove('video')}
-                                            className="text-[var(--primary-red)]"
+                                            className="text-[var(--primary-red)] bg-[var(--input-error-bg)] px-[0.5rem] py-[0.2rem] rounded-[0.3rem]"
                                         >
                                             <FaTrash />
                                         </button>
@@ -423,7 +423,7 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
                             </div>
 
                             {/* PDF Upload */}
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-[0.5rem]">
                                 <input
                                     type="file"
                                     id="pdfUpload"
@@ -445,7 +445,7 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
                                     )}
                                 </label>
                                 {formData.media.pdf && (
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-[0.5rem]">
                                         <a 
                                             href={formData.media.pdf} 
                                             target="_blank" 
@@ -457,7 +457,7 @@ const CourseModal = ({ isOpen, onClose, course, onSave }) => {
                                         <button 
                                             type="button"
                                             onClick={() => handleFileRemove('pdf')}
-                                            className="text-[var(--primary-red)]"
+                                            className="text-[var(--primary-red)] bg-[var(--input-error-bg)] px-[0.5rem] py-[0.2rem] rounded-[0.3rem]"
                                         >
                                             <FaTrash />
                                         </button>
