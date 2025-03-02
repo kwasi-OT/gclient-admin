@@ -12,6 +12,8 @@ import { ImBin } from "react-icons/im";
 import { IoEyeOutline } from "react-icons/io5";
 import CategoryDetailModal from "./CategoryDetailModal";
 import { MdOutlineChevronLeft, MdOutlineChevronRight } from "react-icons/md";
+import { IoTrash } from "react-icons/io5";
+// import { toast } from "react-hot-toast";
 
 const Categories = () => {
     const [categories, setCategories] = useState([]);
@@ -21,7 +23,7 @@ const Categories = () => {
     const [categoriesPerPage] = useState(6);
     const [totalCategories, setTotalCategories] = useState(0);
     const [selectedCategory, setSelectedCategory] = useState(null);
-    const [selectedSubCategory] = useState(null);
+    const [selectedSubCategory, setSelectedSubCategory] = useState(null);
     const [isModalOpen, setModalOpen] = useState(false);
     const [isSubCategoryModalOpen, setSubCategoryModalOpen] = useState(false);
     const [isAlertModalOpen, setAlertModalOpen] = useState(false);
@@ -111,7 +113,22 @@ const Categories = () => {
 
     const handleAddSubCategory = (categoryId) => {
         setSelectedCategory(categories.find((category) => category.id === categoryId));
+        setSelectedSubCategory(null);
         setSubCategoryModalOpen(true);
+    };
+
+    // handle edit sub category
+    const handleEditSubCategory = (categoryId, subCategoryId) => {
+        // setSelectedCategory(categories.find((category) => category.id === categoryId));
+        setSelectedSubCategory(subCategories[categoryId].find((subCategory) => subCategory.id === subCategoryId));
+        setSubCategoryModalOpen(true);
+    };
+
+    // remove sub category
+    const handleRemoveSubCategory = async (categoryId, subCategoryId) => {
+        // setSelectedCategory(categories.find((category) => category.id === categoryId));
+        setSelectedSubCategory(subCategories[categoryId].find((subCategory) => subCategory.id === subCategoryId));
+        setAlertModalOpen(true);
     };
 
     // Calculate total pages
@@ -150,9 +167,21 @@ const Categories = () => {
                                         {subCategories[category.id]?.map((subCat) => (
                                             <span 
                                                 key={subCat.id} 
-                                                className="bg-[var(--light-blue)] text-[var(--primary-blue)] px-[1.6rem] py-[0.5rem] rounded-full text-xs"
+                                                className="bg-[var(--light-blue)] text-[var(--primary-blue)] px-[1.6rem] py-[0.5rem] rounded-full text-[0.8rem]"
                                             >
                                                 {subCat.name}
+                                                <button 
+                                                    onClick={() => handleEditSubCategory(category.id, subCat.id)}
+                                                    className="bg-[var(--light-blue)] text-white px-[0.3rem] py-[0.1rem] rounded-full relative top-[-0.5rem] right-[-0.5rem]"
+                                                >
+                                                    <MdOutlineEdit color="var(--primary-lemon-green)" size={12}/>
+                                                </button>
+                                                <button 
+                                                    onClick={() => handleRemoveSubCategory(category.id, subCat.id)}
+                                                    className="bg-[var(--light-blue)] text-white px-[0.3rem] py-[0.1rem] rounded-full relative top-[-0.5rem] right-[-0.5rem]"
+                                                >
+                                                    <IoTrash color="var(--primary-red)" size={12}/>
+                                                </button>
                                             </span>
                                         ))}
                                         <button 
@@ -232,9 +261,10 @@ const Categories = () => {
             {/* Alert Modal */}
             <AlertModal 
                 isOpen={isAlertModalOpen} 
-                onClose={() => setAlertModalOpen(false)} 
+                onClose={() => {setAlertModalOpen(false); setSelectedCategory(null); setSelectedSubCategory(null);}} 
                 onConfirm={fetchCategories} 
                 category={selectedCategory} 
+                subCategory={selectedSubCategory} 
             />
 
             {/* Category Detail Modal */}

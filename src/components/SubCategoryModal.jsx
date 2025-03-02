@@ -86,7 +86,7 @@ const SubCategoryModal = ({ isOpen, onClose, category, subCategory, onSave }) =>
                 </h3>
                 <form onSubmit={handleSubmit} className='w-[80%] flex flex-col justify-center gap-[1rem]'>
                     <div className="mb-4">
-                        <label className="block mb-1 text-[0.85rem]">Sub-Category Name</label>
+                        <label className="block mb-1 text-[0.9rem]">Sub-Category Name</label>
                         <input
                             type="text"
                             value={formData.name}

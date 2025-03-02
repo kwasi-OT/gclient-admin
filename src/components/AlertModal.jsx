@@ -2,7 +2,7 @@ import { supabase } from "../server/supabaseClient";
 import toast from 'react-hot-toast';
 import PropTypes from 'prop-types';
 
-const AlertModal = ({ isOpen, onClose, onConfirm, instructor, student, category, course }) => {
+const AlertModal = ({ isOpen, onClose, onConfirm, instructor, student, category, subCategory, course }) => {
     const handleDelete = async (id) => {
         const { error } = await supabase.from("users").delete().eq("id", id);
         if (error) {
@@ -14,6 +14,45 @@ const AlertModal = ({ isOpen, onClose, onConfirm, instructor, student, category,
         onConfirm();
         onClose();
     };
+
+    // handle delete category
+    const handleDeleteCategory = async (id) => {
+        const { error } = await supabase.from("categories").delete().eq("id", id);
+        if (error) {
+            console.error("Error deleting item:", error);
+            toast.error("Failed to delete item");
+        } else {
+            toast.success("Item deleted successfully");
+        }
+        onConfirm();
+        onClose();
+    }
+
+    // handle delete sub-category
+    const handleDeleteSubCategory = async (id) => {
+        const { error } = await supabase.from("sub_categories").delete().eq("id", id);
+        if (error) {
+            console.error("Error deleting item:", error);
+            toast.error("Failed to delete item");
+        } else {
+            toast.success("Item deleted successfully");
+        }
+        onConfirm();
+        onClose();
+    }
+
+    // handle delete course
+    const handleDeleteCourse = async (id) => {
+        const { error } = await supabase.from("courses").delete().eq("id", id);
+        if (error) {
+            console.error("Error deleting item:", error);
+            toast.error("Failed to delete item");
+        } else {
+            toast.success("Item deleted successfully");
+        }
+        onConfirm();
+        onClose();
+    }
 
     if (!isOpen) return null;
 
@@ -46,7 +85,17 @@ const AlertModal = ({ isOpen, onClose, onConfirm, instructor, student, category,
                 </p>
                 <div className="w-[100%] h-[90%] flex flex-row items-center justify-center mt-[-1.5rem] gap-[1rem]">
                     <button onClick={onClose} className="px-4 py-2 bg-[var(--primary-blue)] hover:bg-[var(--logo-blue)] rounded-md mr-2">Cancel</button>
-                    <button onClick={() => handleDelete(category.id)} className="px-4 py-2 bg-[var(--primary-red)] hover:bg-[var(--student-card-bg)] text-white rounded-md">Delete</button>
+                    <button onClick={() => handleDeleteCategory(category.id)} className="px-4 py-2 bg-[var(--primary-red)] hover:bg-[var(--student-card-bg)] text-white rounded-md">Delete</button>
+                </div>
+            </div>}
+            {subCategory && <div className="w-[30%] h-[20%] flex flex-col items-center justify-center gap-[1rem] bg-[var(--bg-white)] rounded-[0.3rem] shadow-[var(--shadow-md)] p-[1rem]">
+                <p className="text-gray-600 mb-4 flex flex-col items-center justify-center">
+                    Are you sure you want to delete this sub-category?
+                    <span className="font-[600]">{subCategory.name}</span>
+                </p>
+                <div className="w-[100%] h-[90%] flex flex-row items-center justify-center mt-[-1.5rem] gap-[1rem]">
+                    <button onClick={onClose} className="px-4 py-2 bg-[var(--primary-blue)] hover:bg-[var(--logo-blue)] rounded-md mr-2">Cancel</button>
+                    <button onClick={() => handleDeleteSubCategory(subCategory.id)} className="px-4 py-2 bg-[var(--primary-red)] hover:bg-[var(--student-card-bg)] text-white rounded-md">Delete</button>
                 </div>
             </div>}
             {course && <div className="w-[30%] h-[20%] flex flex-col items-center justify-center gap-[1rem] bg-[var(--bg-white)] rounded-[0.3rem] shadow-[var(--shadow-md)] p-[1rem]">
@@ -56,7 +105,7 @@ const AlertModal = ({ isOpen, onClose, onConfirm, instructor, student, category,
                 </p>
                 <div className="w-[100%] h-[90%] flex flex-row items-center justify-center mt-[-1.5rem] gap-[1rem]">
                     <button onClick={onClose} className="px-4 py-2 bg-[var(--primary-blue)] hover:bg-[var(--logo-blue)] rounded-md mr-2">Cancel</button>
-                    <button onClick={() => handleDelete(course.id)} className="px-4 py-2 bg-[var(--primary-red)] hover:bg-[var(--student-card-bg)] text-white rounded-md">Delete</button>
+                    <button onClick={() => handleDeleteCourse(course.id)} className="px-4 py-2 bg-[var(--primary-red)] hover:bg-[var(--student-card-bg)] text-white rounded-md">Delete</button>
                 </div>
             </div>}
         </div>
