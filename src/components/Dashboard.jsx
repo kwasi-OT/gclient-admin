@@ -40,11 +40,11 @@ const Dashboard = () => {
                         <div className="left w-[30%] h-[100%] flex flex-col items-center justify-center bg-[var(--student-card-icon-bg)] rounded-[1rem]">
                             <HiOutlineUserGroup size={30} color="var(--bg-white)"/>
                         </div>
-                        <div className="right w-[50%] h-[100%]">
+                        <div className="right w-[60%] h-[100%]">
                             <h3 className="text-[var(--bg-white)]">Total Students</h3>
                         </div>
                     </div>
-                    <div className="card-bottom w-[100%] h-[40%] flex items-end justify-center">
+                    <div className="card-bottom w-[100%] h-[40%] flex items-center justify-center">
                         {loading ? <Skeleton width={100} height={30} /> : <p className="text-[3.5rem] font-[500] text-[var(--bg-white)]">{studentsCount}</p>}
                     </div>
                 </div>
@@ -57,7 +57,7 @@ const Dashboard = () => {
                             <h3 className="text-[var(--bg-white)]">Total Instructors</h3>
                         </div>
                     </div>
-                    <div className="card-bottom w-[100%] h-[40%] flex items-end justify-center">
+                    <div className="card-bottom w-[100%] h-[40%] flex items-center justify-center">
                         {loading ? <Skeleton width={100} height={30} /> : <p className="text-[3.5rem] font-[500] text-[var(--bg-white)]">{instructorsCount}</p>}
                     </div>
                 </div>
@@ -70,7 +70,7 @@ const Dashboard = () => {
                             <h3 className="text-[var(--bg-white)]">Total Courses</h3>
                         </div>
                     </div>
-                    <div className="card-bottom w-[100%] h-[40%] flex items-end justify-center">
+                    <div className="card-bottom w-[100%] h-[40%] flex items-center justify-center">
                         {loading ? <Skeleton width={100} height={30} /> : <p className="text-[3.5rem] font-[500] text-[var(--bg-white)]">{coursesCount}</p>}
                     </div>
                 </div>

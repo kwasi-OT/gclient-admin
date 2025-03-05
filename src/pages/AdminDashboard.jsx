@@ -69,7 +69,7 @@ export default function AdminDashboard() {
     }
 
     return (
-        <div className="w-full flex justify-between items-center h-[100vh] min-h-screen p-6 bg-[var(--bg-white)]">
+        <div className="w-full flex justify-between items-center h-[110vh] min-h-screen p-6 bg-[var(--bg-white)]">
             <div className="sidebar w-[15%] h-full flex flex-col items-center justify-between bg-[var(--primary-blue)] rounded-r-[0.3rem]">
                 <div className="sidebar-top w-[100%] h-[80%] flex flex-col items-center justify-start gap-[2rem]">
                     <div className="logo w-[90%] h-[15%] flex flex-col items-center justify-center bg-[var(--bg-white)] mt-[0.5rem] rounded-[0.3rem]">

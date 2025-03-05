@@ -18,7 +18,7 @@ const Instructors = () => {
     const[instructor, setInstructor] = useState([]);
     const[loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
-    const [instructorsPerPage] = useState(6);
+    const [instructorsPerPage] = useState(4);
     const [totalInstructors, setTotalInstructors] = useState(0);
     const [selectedInstructor, setSelectedInstructor] = useState(null);
     const [isModalOpen, setModalOpen] = useState(false);
@@ -142,7 +142,7 @@ const Instructors = () => {
             )}
             {/* Pagination */}
             {totalPages > 1 && (
-                <div className="flex justify-center gap-[0.5rem] mt-[2rem] space-x-2">
+                <div className="flex justify-center gap-[0.5rem] mt-[1rem] space-x-2">
                     <button 
                         onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                         disabled={currentPage === 1}
